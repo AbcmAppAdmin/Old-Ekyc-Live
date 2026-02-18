@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class VoterIdResponseToMerchant {
+public class EsignResponseToMerchant {
 
     @JsonProperty("response_code")
     public String responseCode;
@@ -29,6 +29,9 @@ public class VoterIdResponseToMerchant {
 
     @JsonProperty("order_id")
     public String orderId;
+    
+    @JsonProperty("response_time")
+    public String responseTime;
 
     
     @JsonProperty("signer_requests")
@@ -46,6 +49,9 @@ public class VoterIdResponseToMerchant {
 
         @JsonProperty("signer_name")
         public String signerName;
+        
+        @JsonProperty("email_notification")
+        public String emailNotification;
 
         @JsonProperty("signer_email")
         public String signerEmail;

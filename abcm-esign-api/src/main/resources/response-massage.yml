@@ -24,6 +24,8 @@ custom:
     wallet-expired: "Wallet validity expired"
     order-id-missing: "Order ID is required."
     order-id-duplicate: "Provided Order ID already exists. Please provide a unique Order ID."
+    signer-validiate: "Invalid signer data. number of signers must be between 1 and 4."
+    file-validation: "document is not allowed to be empty"
 
   
 

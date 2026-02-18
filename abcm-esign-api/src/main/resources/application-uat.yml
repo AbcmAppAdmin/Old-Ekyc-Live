@@ -37,6 +37,16 @@ prometheus:
     export:
       enabled: true
 
-ContextPath: http://203.192.228.125:1002/abcm-voterid-api
+ContextPath: http://203.192.228.125:1002/abcm-esign-api
 
-LogFilepath: /home/logs/kyc-panel/abcm-voter-api/
+LogFilepath: /home/logs/kyc-panel/abcm-esign-api/
+
+timeout:
+  connectionTimeout: 5000
+  readTimeout: 10000
+
+
+#clientUrl: http://localhost:8087
+
+clientUrl: http://203.192.228.125:1002/view-kyc
+

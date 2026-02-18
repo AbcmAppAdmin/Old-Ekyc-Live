@@ -24,8 +24,7 @@ merchantDetails: http://localhost:8089
 #http://localhost:8087/app/public/fetchById?mid=
 LogFilepath: C:/Kyc-Service-Log/logs/VoterId-Api-Service-Log/
 
-endpoints:
-  url-shortner:
+
 
 timeout:
   connectionTimeout: 5000
@@ -49,3 +48,5 @@ prometheus:
 ContextPath: http://localhost:8049
 
 server.error.include-stacktrace: never
+
+clientUrl: http://localhost:8087

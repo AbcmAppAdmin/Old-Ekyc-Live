@@ -1,5 +1,9 @@
 package com.abcm.esign_service.esignWebhook;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -7,17 +11,20 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.abcm.esign_service.DTO.EsignWebhookResponseDTO;
-import com.abcm.esign_service.util.UrlHelper;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import com.abcm.esign_service.DTO.EsignWebhookResponseDTO;
 import com.abcm.esign_service.repo.EsignRepository;
+import com.abcm.esign_service.util.UpdateBalance;
+import com.abcm.esign_service.util.UrlHelper;
 import com.abcmkyc.entity.KycData;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,16 +43,22 @@ public class EsignWebhookService {
     private static final String STATUS_SIGNED = "SIGNED";
     private static final String STATUS_IN_PROGRESS = "IN-PROGRESS";
     private static final String STATUS_COMPLETED = "COMPLETED";
+    private  final UpdateBalance updatebalance;
 
     @Transactional
     public void updateWebhookResponse(String response) {
-
+  
+    	log.info("Provider Webhook Response:{}", response);
         JSONObject json = new JSONObject(response);
         JSONObject result = json.getJSONObject("result");
         JSONObject document = result.getJSONObject("document");
         String documentStatus = document.getString("status");
         String mainRequestId = json.getString("request_id");
 
+        //update balance
+        JSONObject metadata = json.optJSONObject("metadata");
+       
+        
         log.info("Webhook received for requestId: {}, documentStatus: {}", mainRequestId, documentStatus);
 
         // Collect all request IDs (main + other signers)
@@ -58,19 +71,39 @@ public class EsignWebhookService {
             return;
         }
 
+   
+        //fetch map request id get kyc Data
+        KycData mainKycData = kycList.stream()
+                .filter(kyc -> mainRequestId.equals(kyc.getRequestId()))
+                .findFirst()  // Should return one record
+                .orElseThrow(() -> new RuntimeException("No KycData found for mainRequestId: " + mainRequestId));
         Map<String, KycData> kycMap = kycList.stream()
                 .collect(Collectors.toMap(KycData::getRequestId, Function.identity()));
+        
+        //webhook response get meta data and check y balance deduct
+        if (metadata != null) {
+            String billable = metadata.optString("billable");
+            if ("Y".equalsIgnoreCase(billable)) {
+                // Proper logging with placeholder for dynamic values
+                log.info("Balance update for Esign product: Product Rate: {} for MerchantId: {}",
+                        mainKycData.getProductRate(), mainKycData.getMerchantId());
+                // Update wallet balance
+                updatebalance.updateWalletBalance(mainKycData.getMerchantId(), mainKycData.getProductRate());
+            }
+        }
 
         // Update main signer status
         JSONObject signer = result.getJSONObject("signer");
-        updateSignerStatus(kycMap.get(mainRequestId), signer.optString("status"), documentStatus);
-
+        updateSignerStatus(kycMap.get(mainRequestId), signer.optString("status"), documentStatus,document,mainRequestId);
+        
+      
+        
         // Update other signers status
         if (result.has("other_signers")) {
             for (Object obj : result.getJSONArray("other_signers")) {
                 JSONObject other = (JSONObject) obj;
                 updateSignerStatus(kycMap.get(other.getString("request_id")),
-                        other.optString("status"), documentStatus);
+                        other.optString("status"), documentStatus,null,null);
             }
         }
 
@@ -82,7 +115,7 @@ public class EsignWebhookService {
 
         esignRepository.saveAll(kycList);
         log.info("Webhook status updated for {} signer(s), orderId: {}",
-                kycList.size(), kycList.isEmpty() ? "N/A" : kycList.getFirst().getOrderId());
+                kycList.size(), kycList.isEmpty() ? "N/A" : kycList.get(0).getOrderId());
 
         // Post response to merchant webhook (async — don't block Zoop)
         postResponseToMerchant(json, kycList);
@@ -101,10 +134,10 @@ public class EsignWebhookService {
         }
 
         // Get merchant webhook URL from KycData
-        String merchantWebhookUrl = signersList.getFirst().getMerchantWebhookUrl();
+        String merchantWebhookUrl = signersList.get(0).getMerchantWebhookUrl();
         if (merchantWebhookUrl == null || merchantWebhookUrl.isBlank()) {
             log.info("No merchant webhook URL configured, skipping POST for orderId: {}",
-                    signersList.getFirst().getOrderId());
+                    signersList.get(0).getOrderId());
             return;
         }
 
@@ -130,7 +163,7 @@ public class EsignWebhookService {
 
             } catch (Exception e) {
                 log.error("Merchant webhook POST failed for orderId: {}: {}",
-                        signersList.getFirst().getOrderId(), e.getMessage(), e);
+                        signersList.get(0).getOrderId(), e.getMessage(), e);
                 updateMerchantWebhookStatus(signersList, false);
             }
         });
@@ -156,8 +189,10 @@ public class EsignWebhookService {
     /**
      * Updates a single signer's status. Only upgrades — never downgrades from
      * SUCCESS.
+     * @param mainRequestId 
+     * @param document 
      */
-    private void updateSignerStatus(KycData kycData, String newSignerStatus, String documentStatus) {
+    private void updateSignerStatus(KycData kycData, String newSignerStatus, String documentStatus, JSONObject document, String mainRequestId) {
         if (kycData == null) {
             return;
         }
@@ -169,6 +204,12 @@ public class EsignWebhookService {
         kycData.setStatus(STATUS_SUCCESS.equalsIgnoreCase(newSignerStatus)
                 ? STATUS_SIGNED
                 : documentStatus);
+        kycData.setSignerSdkUrl(document.getString("signed_url"));
+        ZonedDateTime utcDateTime = ZonedDateTime.parse(document.getString("signed_at"), DateTimeFormatter.ISO_DATE_TIME);
+        ZonedDateTime indiaDateTime = utcDateTime.withZoneSameInstant(ZoneId.of("Asia/Kolkata"));
+        LocalDateTime signerDate = indiaDateTime.toLocalDateTime();
+        kycData.setSignedAt(signerDate);
+        kycData.setSignerUrl(urlHelper.getDocumentUrl(mainRequestId));
     }
 
     /**
@@ -187,7 +228,7 @@ public class EsignWebhookService {
                 .collect(Collectors.toMap(KycData::getRequestId, Function.identity()));
 
         // Set top-level fields
-        KycData firstSigner = signersList.getFirst();
+        KycData firstSigner = signersList.get(0);
         responseDTO.setMerchantId(firstSigner.getMerchantId());
         responseDTO.setOrderId(firstSigner.getOrderId());
         responseDTO.setSuccess(response.optBoolean("success"));
@@ -252,7 +293,7 @@ public class EsignWebhookService {
             }
             esignRepository.saveAll(signersList);
             log.info("Merchant webhook status updated to {} for orderId: {}",
-                    success, signersList.getFirst().getOrderId());
+                    success, signersList.get(0).getOrderId());
         } catch (Exception e) {
             log.error("Failed to update merchant webhook status: {}", e.getMessage());
         }

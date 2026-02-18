@@ -1,4 +1,4 @@
-package com.abcm.esign_service.DTO;
+package com.abcm.kyc.service.ui.Esign;
 
 import java.util.List;
 

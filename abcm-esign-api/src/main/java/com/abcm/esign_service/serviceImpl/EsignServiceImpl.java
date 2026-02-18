@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.CompletableFuture;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +20,7 @@ import com.abcm.esign_service.dyanamicProviderResponse.ResponseDispatcher;
 import com.abcm.esign_service.dyanamicRequestBody.EsignRequestDispatcher;
 import com.abcm.esign_service.dyanamicRequestBody.ZoopEsignAdhaarRequest;
 import com.abcm.esign_service.exception.CustomException;
+import com.abcm.esign_service.repo.EsignRepository;
 import com.abcm.esign_service.service.AsyncEsignRequestSaveService;
 import com.abcm.esign_service.service.VerifyEsignService;
 import com.abcm.esign_service.util.CommonUtils;
@@ -69,13 +71,15 @@ public class EsignServiceImpl implements VerifyEsignService {
 
 	@Value("${email.send.to}")
 	private String to;
+	
+	private final EsignRepository repository;
 
 	@Override
-	public ResponseModel verifyEsign(EsignRequest request, String signersJson, String recipientsJson,
+	public ResponseModel verifyEsign(EsignRequest request, String signersJson,
 			MultipartFile file, String appId, String apiKey) {
 
 		log.info("verify voter id service method{}", request);
-		validiateEsignRequest.validateEsignRequest(request);
+		validiateEsignRequest.validateEsignRequest(request,file);
 
 		ProductDetailsDto productDetailsDto = getProdcutDetails(request.getMerchant_id());
 		log.info("Product Details Dto: {}", productDetailsDto);
@@ -86,9 +90,10 @@ public class EsignServiceImpl implements VerifyEsignService {
 
 		//log.info("after valideate credential check");
 
-		EsignMerchantRequest esignMerchantRequest = esignMerchantRequestMapper.mapToFullRequest(request, signersJson,
-				recipientsJson);
-
+		EsignMerchantRequest esignMerchantRequest = esignMerchantRequestMapper.mapToFullRequest(request, signersJson);
+		log.info("Gsom Reeust body:{}", esignMerchantRequest);
+            
+		voterIdRequestvalidator.checksignersize(esignMerchantRequest.getSigners());
 		//log.info("after EsignMerchantRequest ReuestBuild :{}", productDetailsDto.getProviderName());
 
 		ZoopEsignAdhaarRequest zoopEsignAdhaarRequest = dispatcher
@@ -110,6 +115,15 @@ public class EsignServiceImpl implements VerifyEsignService {
 			ProductDetailsDto productDetailsDto, String trackId, String orderId) {
 		log.info("Api Call handleVoterIdVerificationAsync");
 		//Link Not Expired
+		String errorResponse="{\r\n"
+				+ "    \"success\": false,\r\n"
+				+ "    \"response_code\": \"106\",\r\n"
+				+ "    \"response_message\": \"Invalid inputs. Check error and retry\",\r\n"
+				+ "    \"metadata\": {\r\n"
+				+ "        \"billable\": \"N\",\r\n"
+				+ "        \"reason_message\": \"\\\"signers[0].signer_name\\\" is required\"\r\n"
+				+ "    }\r\n"
+				+ "}";
 		String apiResponse = "{\r\n"
 				+ "    \"expires_at\": \"2026-02-21T17:17:50.052+00:00\",\r\n"
 				+ "    \"request_timestamp\": \"2026-02-14T17:17:50.052+00:00\",\r\n"
@@ -154,7 +168,7 @@ public class EsignServiceImpl implements VerifyEsignService {
 				+ "    \"test\": false\r\n"
 				+ "}\r\n"
 				+ "";
-		// apiCall.providerApiCall(zoopEsignAdhaarRequest, productDetailsDto);
+		String mainResponse= apiCall.providerApiCall(zoopEsignAdhaarRequest, productDetailsDto);
 		log.info("voteri API response : {}", apiResponse2);
 		if (apiResponse2 == null || apiResponse2.isBlank() || "fail:false".equalsIgnoreCase(apiResponse2)
 				|| !apiResponse2.trim().startsWith("{")) {
@@ -172,18 +186,17 @@ public class EsignServiceImpl implements VerifyEsignService {
 					// Get current date-time
 					String timestamp = LocalDateTime.now().format(formatter);
 					mailstring1 = mailstring1.replace("{{Timestamp}}", timestamp);
-					// sendFailureEmail.sendEkycFailureEmail(mailstring1, "", serviceDownSubject,
-					// to);
+					 sendFailureEmail.sendEkycFailureEmail(mailstring1, "", serviceDownSubject,to);
 
 				} catch (Exception e) {
-					e.printStackTrace(); // Consider logging instead
+					e.printStackTrace(); 
 				}
 			});
 			log.error("API response is null, empty, 'fail:false', or not valid JSON: " + apiResponse2);
 			throw new CustomException(environment.getProperty("custom.messages.provider-invalid-res"),
 					Integer.parseInt(environment.getProperty("custom.codes.provider-invalid-res")));
 		}
-		JSONObject responseObj = new JSONObject(apiResponse2);
+		JSONObject responseObj = new JSONObject(mainResponse);
 		return responseDispatcher.getVoterIdResponse(productDetailsDto.getProviderName(), responseObj, trackId,
 				productDetailsDto.getMerchantId(), productDetailsDto.getProductRate(), orderId);
 	}
@@ -246,6 +259,11 @@ public class EsignServiceImpl implements VerifyEsignService {
 						})))
 				.findFirst().orElseThrow(() -> new CustomException(environment.getProperty("custom.messages.Not-Found"),
 						Integer.parseInt(environment.getProperty("custom.codes.Not-Found"))));
+	}
+
+	@Override
+	public boolean existRequestId(String requestId) {
+		return repository.existsByRequestId(requestId);
 	}
 
 }

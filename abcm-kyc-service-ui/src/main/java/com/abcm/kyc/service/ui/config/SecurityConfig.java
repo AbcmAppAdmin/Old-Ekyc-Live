@@ -51,6 +51,10 @@ public class SecurityConfig {
 				//.requestMatchers(new AntPathRequestMatcher("/app/user/**")).hasRole("USER")
 				.requestMatchers(new AntPathRequestMatcher("/app/merchant/**")).hasAnyRole("MERCHANT")
 	            .requestMatchers("/payment-response").permitAll()
+	            .requestMatchers("/invalidError/**").permitAll()
+	            .requestMatchers("/esign/webhook/**").permitAll()
+	            
+	            .requestMatchers("/response/**").permitAll()
 				.requestMatchers("/WEB-INF/**").permitAll()
 				.requestMatchers("/assets/**").permitAll()
 				.requestMatchers("/Agreement/**").permitAll()

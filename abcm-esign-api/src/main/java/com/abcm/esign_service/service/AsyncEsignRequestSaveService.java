@@ -30,22 +30,17 @@ public class AsyncEsignRequestSaveService {
 	                              String merchantName) {
 
 	    log.info("Saved Request Esign Verification {}", request);
-
 	    
 	    if (repository.existsByMerchantIdAndOrderId(
 	            request.getMerchant_id(),
 	            request.getOrder_Id())) {
-
 	        throw new CustomException(
 	                environment.getProperty("custom.messages.order-id-duplicate"),
 	                Integer.parseInt(environment.getProperty("custom.codes.order-id-missing")));
 	    }
-
 	    LocalDateTime currentTime = LocalDateTime.now();
 	    KycData lastSaved = null;
-
 	    for (EsignMerchantRequest.Signer signer : request.getSigners()) {
-
 	        KycData kycData = KycData.builder()
 	                .merchantId(request.getMerchant_id())
 	                .merchantName(merchantName)
@@ -62,10 +57,10 @@ public class AsyncEsignRequestSaveService {
 	                .signerEmail(signer.getSigner_email())
 	                .signerPurpose(signer.getSigner_purpose())
 	                .signerDocumentName(request.getDocument_name())
+	                .signerEmailNotification(signer.getEmail_notification())
 	                .build();
 	        lastSaved = repository.save(kycData);
 	    }
-
 	    return lastSaved;
 	}
 

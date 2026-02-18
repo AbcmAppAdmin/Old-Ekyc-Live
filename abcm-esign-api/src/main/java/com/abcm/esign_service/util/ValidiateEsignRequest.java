@@ -1,13 +1,17 @@
 package com.abcm.esign_service.util;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.abcm.esign_service.DTO.ProductDetailsDto;
 import com.abcm.esign_service.DTO.ResponseModel;
+import com.abcm.esign_service.DTO.EsignMerchantRequest.Signer;
 import com.abcm.esign_service.DTO.EsignRequest;
 import com.abcm.esign_service.exception.CustomException;
 import com.abcm.esign_service.repo.EsignRepository;
@@ -36,7 +40,7 @@ public class ValidiateEsignRequest {
 
 	
 	
-	public void validateEsignRequest(EsignRequest request) {
+	public void validateEsignRequest(EsignRequest request, MultipartFile file) {
 		log.debug("Starting  Voter Id validation",request.getMerchant_id());
 		
 		if (isEmpty(request.getMerchant_id())) {
@@ -48,6 +52,11 @@ public class ValidiateEsignRequest {
 		
 		if (isEmpty(request.getOrder_id())) {
 			throw customException("order-id-missing");
+		}
+		
+		if(file==null || file.isEmpty())
+		{
+			throw customException("file-validation");
 		}
 	}
 
@@ -117,5 +126,17 @@ public class ValidiateEsignRequest {
 		log.info("Merchant status and service eligibility validated for Merchant ID: {}", merchant.getMerchantId());
 		return null;
 	}
+
+	public ResponseModel checksignersize(List<Signer> signers) {
+	    if (signers == null || signers.size() == 0 || signers.size() > 4) {
+	    	log.info("validate signer:");
+	    	throw customException("signer-validiate");
+	    }
+		return null;
+
+	    
+	}
+		
+	
 
 }

@@ -35,3 +35,9 @@ prometheus:
       enabled: true
 
 ContextPath: https://ekyc.ablepay.in/abcm-voterid-api
+
+#clientUrl: http://localhost:8087
+
+
+clientUrl: https://ekyc.ablepay.in/view-kyc
+

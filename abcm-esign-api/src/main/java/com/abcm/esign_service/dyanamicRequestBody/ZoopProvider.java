@@ -3,6 +3,7 @@ package com.abcm.esign_service.dyanamicRequestBody;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +16,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ZoopProvider implements ServiceProvider<ZoopEsignAdhaarRequest> {
 
+	@Value("${ReturnUrl}")
+	private String returnUrl;
+	
+	
+	@Value("${WebhookUrl}")
+	private String WebhookUrl;
+	
     @Override
     public ZoopEsignAdhaarRequest buildRequest(EsignMerchantRequest request, MultipartFile file) {
 
@@ -65,8 +73,8 @@ public class ZoopProvider implements ServiceProvider<ZoopEsignAdhaarRequest> {
         // ✅ 3. Other Fields
         zoopRequest.setTxn_expiry_min(request.getLink_expiry_min());
         zoopRequest.setWhite_label("Y");
-        zoopRequest.setRedirect_url("http://203.192.228.125:7081/WNPApp/esuccess");
-        zoopRequest.setResponse_url("http://203.192.228.125:7081/ABCMKyc/esign/webhook");
+        zoopRequest.setRedirect_url(returnUrl);
+        zoopRequest.setResponse_url(WebhookUrl);
         zoopRequest.setEsign_type("AADHAAR");
 
         // ✅ 4. Email Template

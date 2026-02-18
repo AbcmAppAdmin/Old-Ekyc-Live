@@ -19,4 +19,21 @@ email.serviceDown.subject : "Important: e-KYC Service Interruption Due to High D
 email.serviceDown.template.path: /opt/tomcat/webapps/abcm-voterid-api/WEB-INF/classes/static/e-KycServiceDownEmail-T.html
 
 
+#Esign Template 
+email.esign.template.path: /opt/apache-tomcat-10.1.28_ablepay/webapps/abcm-esign-api/WEB-INF/classes/static/e-KYC-SdkUrlEmail.html
+#C:/EKYC-GITHUB/Old-Ekyc-Live/abcm-esign-api/src/main/resources/static/e-KYCEmailTemplate/e-KYC-SdkUrlEmail.html
+email.esign.subject: e-KYC signing request
 Env: LIVE Environment
+
+
+#Return and Webhook Url
+ #Local
+ReturnUrl: http://203.192.228.125:1002/abcm-esign-api/api/v1/esignReturnResponse
+WebhookUrl: http://203.192.228.125:1002/abcm-esign-api/api/esign/webhook
+
+
+#Live
+#ReturnUrl: http://203.192.228.125:1002/abcm-esign-api/api/v1/esignReturnResponse
+#WebhookUrl: http://203.192.228.125:1002/abcm-esign-api/api/esign/webhook
+
+

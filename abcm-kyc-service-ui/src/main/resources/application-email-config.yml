@@ -11,3 +11,27 @@ email.lowBalance.template.path: /opt/tomcat/webapps/view-kyc/WEB-INF/classes/sta
 #C://KYCGIT//abcm-aadhaar-api//src//main//resources//static//e-KYCEmailTemplate//eKyc-lowallet-balance.html
 email.send.api.url: https://enotification.chatnpay.com/email/withmailer/sendEmailWithAttachmentWithCc
 email.lowbalance.subject: Low Wallet Balance – Urgent Action Required to Avoid Service Disruption
+
+
+
+#Ekyc Configuration
+merchantId: K10001
+ApiKey: 2SOMEO-YDUDNR-7AAMKS-L0L322
+AppId: 6dd275b6809740028a31a458 
+
+#Local
+#EsignApi: http://localhost:8049/api/v1/eSignAadhaar/verify
+
+#UAT
+EsignApi: http://203.192.228.125:1002/abcm-esign-api/api/v1/eSignAadhaar/verify
+
+
+
+
+#Esign Webhook
+
+#Local
+#webhookUrl: http://localhost:8087/esign/webhook
+
+#UAT
+webhookUrl: http://203.192.228.125:1002/view-kyc/esign/webhook

@@ -3,7 +3,7 @@ spring:
   application:
     name: abcm-kyc-service-ui
   profiles:
-    active: dev
+    active: uat
   config:
     import:
       - "classpath:/response-codes.yml"

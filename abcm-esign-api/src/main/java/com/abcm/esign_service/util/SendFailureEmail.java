@@ -69,7 +69,7 @@ public class SendFailureEmail {
             JSONObject requestBody = new JSONObject();
             requestBody.put("from", from);
             requestBody.put("to", SendTo);
-            requestBody.put("bcc", bccArray);
+         //   requestBody.put("bcc", "");
             requestBody.put("subject", finalSubject);
             requestBody.put("contentType", "text/html");
             requestBody.put("body", mailString);

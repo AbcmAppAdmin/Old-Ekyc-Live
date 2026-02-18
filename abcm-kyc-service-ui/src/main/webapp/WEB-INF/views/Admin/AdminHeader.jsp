@@ -165,6 +165,20 @@
 						</ul>
 					</li>
 					
+					<li class="pc-item pc-hasmenu">
+						<a href="#!" class="pc-link"> 
+							<span class="pc-micon"> 
+								<svg class="pc-icon"> <use xlink:href="#custom-status-up"></use> </svg> 
+							</span>
+							<span class="pc-mtext" data-i18n="E-Sign">E-Sign</span>
+							<span class="pc-arrow"><i data-feather="chevron-right"></i></span>
+						</a>
+						<ul class="pc-submenu">
+							<li class="pc-item"><a class="pc-link" href="${url}/app/admin/signer" data-i18n="E-Sign">E-Sign</a></li>
+							
+						</ul>
+					</li>
+					
 					
 					<%-- <li class="pc-item pc-hasmenu"><a href="${url}/app/admin/ekycDemo" class="pc-link"> 
 											<span class="pc-micon"> <svg class="pc-icon"> <use xlink:href="#custom-home"></use> </svg>

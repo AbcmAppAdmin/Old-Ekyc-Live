@@ -356,6 +356,26 @@ public class AdminController {
 		}
 		
 	}
+	
+	
+	
+	@GetMapping("/signer")
+	public String signerView(Principal principal, Model model, HttpServletRequest request) {
+		try {
+			log.info("Add Balance loading ...", principal != null ? principal.getName() : "No user found");
+			if (principal == null) {
+				return "redirect:/login";
+			}
+			
+			//log.info("The merchnat List is"+adminService.getAllMerchantIdMidNames()+"principal"+principal.getName());
+			model.addAttribute("midList", adminService.getAllMerchantIdMidNames());
+			model.addAttribute("username", principal.getName());
+			return "Admin/signer";
+		}catch (Exception e) {
+			return"redirect:/login";
+		}
+		
+	}
 
 
 
