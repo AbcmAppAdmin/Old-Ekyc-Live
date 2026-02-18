@@ -19,54 +19,53 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ServiceProviderApiCall {
 
-	
-	
-	public String providerApiCall(ZoopEsignAdhaarRequest zoopEsignAdhaarRequest, ProductDetailsDto productDetailsDto) {
+    private final RestTemplate restTemplate;
 
-		log.info("Zoop Esign Provider API Call - AppID: " + productDetailsDto.getProviderAppId() +
-		         ", AppKey: " + productDetailsDto.getProviderAppkey());
-		RestTemplate restTemplate = new RestTemplate();
-		
-		HttpHeaders httpHeaders = new HttpHeaders();
-		
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+    public String providerApiCall(ZoopEsignAdhaarRequest zoopEsignAdhaarRequest, ProductDetailsDto productDetailsDto) {
 
-		setProviderHeaders(httpHeaders, productDetailsDto.getProviderName(), productDetailsDto.getProviderAppId(),
-				productDetailsDto.getProviderAppkey());
+        log.info("Zoop Esign Provider API Call - AppID: " + productDetailsDto.getProviderAppId() +
+                ", AppKey: " + productDetailsDto.getProviderAppkey());
 
-		HttpEntity<ZoopEsignAdhaarRequest> entity = new HttpEntity<>(zoopEsignAdhaarRequest, httpHeaders);
+        HttpHeaders httpHeaders = new HttpHeaders();
 
-		try {
-			ResponseEntity<String> response = restTemplate.exchange(productDetailsDto.getAadhaarOtpSendUrl().trim(),
-					HttpMethod.POST, entity, String.class);
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-			return response.getBody();
+        setProviderHeaders(httpHeaders, productDetailsDto.getProviderName(), productDetailsDto.getProviderAppId(),
+                productDetailsDto.getProviderAppkey());
 
-		} catch (HttpClientErrorException | HttpServerErrorException e) {
-			log.error("Error response from API: {}", e.getResponseBodyAsString());
-			e.printStackTrace();
-			return "Error: " + e.getResponseBodyAsString();
+        HttpEntity<ZoopEsignAdhaarRequest> entity = new HttpEntity<>(zoopEsignAdhaarRequest, httpHeaders);
 
-		} catch (RuntimeException e) {
-			log.error("Exception occurred: {}", e.getMessage());
-			e.printStackTrace();
-			return "Exception occurred Runtime: " + e.getMessage();
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(productDetailsDto.getAadhaarOtpSendUrl().trim(),
+                    HttpMethod.POST, entity, String.class);
 
-		} catch (Exception e) {
-			log.error("Exception occurred: {}", e.getMessage());
-			e.printStackTrace();
-			return "Exception occurred Main: " + e.getMessage();
-		}
-	}
+            return response.getBody();
 
-	private void setProviderHeaders(HttpHeaders headers, String provider, String appId, String apiKey) {
-		log.info("App id: {}, appKey: {}", appId, apiKey);
-		switch (provider.toLowerCase()) {
-		case "zoop-esign" -> {
-			headers.set("app-id",appId);
-			headers.set("api-key", apiKey);
-		}
-		default -> throw new IllegalArgumentException("Unsupported provider: " + provider);
-		}
-	}
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            log.error("Error response from API: {}", e.getResponseBodyAsString());
+            e.printStackTrace();
+            return "Error: " + e.getResponseBodyAsString();
+
+        } catch (RuntimeException e) {
+            log.error("Exception occurred: {}", e.getMessage());
+            e.printStackTrace();
+            return "Exception occurred Runtime: " + e.getMessage();
+
+        } catch (Exception e) {
+            log.error("Exception occurred: {}", e.getMessage());
+            e.printStackTrace();
+            return "Exception occurred Main: " + e.getMessage();
+        }
+    }
+
+    private void setProviderHeaders(HttpHeaders headers, String provider, String appId, String apiKey) {
+        log.info("App id: {}, appKey: {}", appId, apiKey);
+        switch (provider.toLowerCase()) {
+            case "zoop-esign" -> {
+                headers.set("app-id", appId);
+                headers.set("api-key", apiKey);
+            }
+            default -> throw new IllegalArgumentException("Unsupported provider: " + provider);
+        }
+    }
 }

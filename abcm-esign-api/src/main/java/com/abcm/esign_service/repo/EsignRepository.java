@@ -61,7 +61,8 @@ public interface EsignRepository extends JpaRepository<KycData, Long> {
     
     List<KycData> findByRequestIdIn(List<String> requestIds);
 
-	
+
+
 	
 
 }

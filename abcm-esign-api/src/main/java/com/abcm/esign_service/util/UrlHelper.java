@@ -16,4 +16,12 @@ public class UrlHelper {
         }
         return domain+"/e-sign/"+ requestId;
     }
+
+
+    public String getDocumentUrl(String requestId) {
+        if (requestId == null || requestId.isBlank()) {
+            throw new IllegalArgumentException("request_id cannot be null, empty, or blank");
+        }
+        return domain+"/view/"+ requestId;
+    }
 }
