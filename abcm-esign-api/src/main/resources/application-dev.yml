@@ -24,6 +24,13 @@ merchantDetails: http://localhost:8089
 #http://localhost:8087/app/public/fetchById?mid=
 LogFilepath: C:/Kyc-Service-Log/logs/VoterId-Api-Service-Log/
 
+endpoints:
+  url-shortner:
+
+timeout:
+  connectionTimeout: 5000
+  readTimeout: 10000
+
 
 management:
   endpoints:

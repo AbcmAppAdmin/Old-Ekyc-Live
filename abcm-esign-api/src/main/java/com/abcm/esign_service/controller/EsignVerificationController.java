@@ -2,6 +2,8 @@ package com.abcm.esign_service.controller;
 
 import java.io.IOException;
 
+import com.abcm.esign_service.serviceImpl.KycDataService;
+import com.abcmkyc.entity.KycData;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class EsignVerificationController {
 
 	private final VerifyEsignService service;
+    private  final KycDataService kycDataService;
 
 	@PostMapping(value = "eSignAadhaar/verify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ResponseModel> esignVerify(@ModelAttribute EsignRequest basicRequest,
@@ -55,4 +58,16 @@ public class EsignVerificationController {
 	        response.setHeader("Connection", "close");
 	    }
 
+
+    @GetMapping("view/{requestId}")
+    public void viewSignedDocument(@PathVariable String requestId, HttpServletResponse response) throws IOException {
+
+        KycData data = kycDataService.getDocumentUrlByRequestId(requestId);
+        response.setStatus(HttpServletResponse.SC_FOUND); // 302 Found
+        response.setHeader("Location", data.getSdkUrl());
+        response.setHeader("Connection", "close");
+    }
+
+
 }
+
