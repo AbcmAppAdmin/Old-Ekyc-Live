@@ -50,7 +50,7 @@ public class AsyncPanRequestSaveService {
                 .providerRequest(panProviderRequest.toString())
                 .product(productName)
                 .merchantName(MerchantName)
-                .created_at(currentTime)
+                .createdAt(currentTime)
                 .trackId(generateKycTransactionId())
                 //.orderId(request.getOrderId())
                 .build();

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.abcm.esign_service.DTO.ProductDetailsDto;
 import com.abcm.esign_service.DTO.ResponseModel;
 import com.abcm.esign_service.DTO.EsignMerchantRequest.Signer;
@@ -35,12 +34,13 @@ public class ValidiateEsignRequest {
 	private final Environment environment;
 	
 	private static final int MIN_REQUIRED_BALANCE = 500;
+	private static final String WhiteLabel="C";
 	
 	private final EsignRepository voterIdRepository;
 
 	
 	
-	public void validateEsignRequest(EsignRequest request, MultipartFile file) {
+	public void validateEsignRequest(EsignRequest request, MultipartFile file, String signersJson) {
 		log.debug("Starting  Voter Id validation",request.getMerchant_id());
 		
 		if (isEmpty(request.getMerchant_id())) {
@@ -58,6 +58,17 @@ public class ValidiateEsignRequest {
 		{
 			throw customException("file-validation");
 		}
+		if(signersJson==null || signersJson.isEmpty())
+		{
+			throw customException("signer-validiate");
+		}
+		if(isEmpty(request.getWebhook_url()))
+		{
+			throw customException("webhook-validation");
+		}
+		
+		
+		
 	}
 
 	private boolean isEmpty(String value) {
@@ -65,13 +76,15 @@ public class ValidiateEsignRequest {
 	}
 
 	public void checkBalance(String merchantId, String MerchantName) {
-		log.info("Merchant Balance check Initial Level{}" + merchantId);
+		
+		//log.info("Merchant Balance check Initial Level{}" + merchantId);
+		
 		Wallet wallet = voterIdRepository.findByMerchantId(merchantId)
 				.orElseThrow(() -> customException("Wallet-not-found"));
 		LocalDate today = LocalDate.now();
 		LocalDate validityDate = wallet.getValidity().toLocalDate();
 		if (validityDate.isBefore(today)) {
-			log.error("Wallet validity expired on {}", validityDate, "today date" + today);
+			//log.error("Wallet validity expired on {}", validityDate, "today date" + today);
 			throw customException("wallet-expired");
 		}
 		long balance = wallet.getBalance();
@@ -79,7 +92,7 @@ public class ValidiateEsignRequest {
 			CompletableFuture.runAsync(() -> {
 				try {
 					String SendEmailMerchant = voterIdRepository.findEmailByMid(merchantId);
-					log.info("Send Email Insufficient balance Pan Service" + SendEmailMerchant, balance);
+					//log.info("Send Email Insufficient balance Pan Service" + SendEmailMerchant, balance);
 					double finalAmount = balance / 100.0;
 					String formattedAmount = String.format("%.2f", finalAmount); 
 					String mailstring1 = CommonUtils
@@ -88,11 +101,11 @@ public class ValidiateEsignRequest {
 					mailstring1 = mailstring1.replace("{{MerchantName}}", MerchantName);
 					sendFailureEmail.sendEkycFailureEmail(mailstring1, "", lowbalanceSubject, SendEmailMerchant);
 				} catch (Exception e) {
-					log.error("Insufficient balance send email exception", e.getMessage());
+					log.error("Insufficient balance send email exception", e);
 					
 				}
 			});
-			log.error("Insufficient balance for Merchant ID: {}. Balance: {}", merchantId, balance);
+			//log.error("Insufficient balance for Merchant ID: {}. Balance: {}", merchantId, balance);
 			throw customException("Balance");
 		}
 
@@ -107,7 +120,7 @@ public class ValidiateEsignRequest {
 	public void validateApiCredentials(ProductDetailsDto merchant, String appId, String apiKey) {
 		log.info("Merchant validateApiCredentialscheck Initial Level{}" + merchant.getMerchantId());
 		if (!Objects.equals(appId, merchant.getAppId()) || !Objects.equals(apiKey, merchant.getApiKey())) {
-			log.error("Invalid API credentials for Merchant ID: {} with appId: {}", merchant.getMerchantId(), appId);
+			//log.error("Invalid API credentials for Merchant ID: {} with appId: {}", merchant.getMerchantId(), appId);
 			throw customException("Key");
 		}
 		validateMerchantStatus(merchant);
@@ -115,21 +128,21 @@ public class ValidiateEsignRequest {
 	}
 
 	public ResponseModel validateMerchantStatus(ProductDetailsDto merchant) {
-		log.error("Merchant is inactive. Merchant ID: {}", merchant.isActive());
+		//log.error("Merchant is inactive. Merchant ID: {}", merchant.isActive());
 		if (!merchant.isActive()) {
 			throw customException("merchant-inactive");
 		}
-		if ("DESABLE".equals(merchant.getVoter_id())) {
-			log.error("PAN verification service is inactive for Merchant ID: {}", merchant.getMerchantId());
+		if ("DESABLE".equals(merchant.getOKYC()) && "E-SIGN".equalsIgnoreCase(merchant.getProductName())) {
+			//log.error("PAN verification service is inactive for Merchant ID: {}", merchant.getMerchantId());
 			throw customException("service-inactive");
 		}
-		log.info("Merchant status and service eligibility validated for Merchant ID: {}", merchant.getMerchantId());
+		//log.info("Merchant status and service eligibility validated for Merchant ID: {}", merchant.getMerchantId());
 		return null;
 	}
 
 	public ResponseModel checksignersize(List<Signer> signers) {
 	    if (signers == null || signers.size() == 0 || signers.size() > 4) {
-	    	log.info("validate signer:");
+	    	//log.info("validate signer:");
 	    	throw customException("signer-validiate");
 	    }
 		return null;

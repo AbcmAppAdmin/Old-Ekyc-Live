@@ -26,6 +26,7 @@ public class MerchantKycOnboardingRequest {
 	private String username;
 	private String password;
 	private String createdBy;
+	private String ipAllowed;
 	
 	 private List<MerchantProductRoute> productRoutes;
 	

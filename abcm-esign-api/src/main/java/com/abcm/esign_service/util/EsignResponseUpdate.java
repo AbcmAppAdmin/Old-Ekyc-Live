@@ -4,18 +4,13 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import com.abcm.esign_service.DTO.EsignResponseToMerchant;
 import com.abcm.esign_service.repo.EsignRepository;
 import com.abcmkyc.entity.KycData;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,11 +38,12 @@ public class EsignResponseUpdate {
 	private static final String STATUS_SUCCESS = "SUCCESS";
 	private static final String STATUS_FAILED = "FAILED";
 	private static final String Billable = "N";
+	private static final String emailSend = "Y";
+	private static final String SignerStatus = "PENDING";
 
 	private final EsignRepository repository;
 	private final SendFailureEmail sendFailureEmail;
 	
-    private static final ExecutorService EMAIL_EXECUTOR = Executors.newFixedThreadPool(5); // configurable
 
 
 	/**
@@ -75,8 +71,11 @@ public class EsignResponseUpdate {
 				entity.setProviderResponse(input.toString());
 				entity.setStatus(isSuccess ? STATUS_SUCCESS : STATUS_FAILED);
 				entity.setBillable(Billable);
+				entity.setResponseMessage(response.getResponseMessage());
 				entity.setProductRate(productRate);
-				entity.setSignerStatus("PENDING");
+				entity.setSignerStatus(SignerStatus);
+				entity.setReasonMessage(response.getResponseMessage());
+				
 			}
 			repository.saveAll(kycEntities);
 			log.info("Batch update completed for {} trackIds.", kycEntities.size());
@@ -137,16 +136,16 @@ public class EsignResponseUpdate {
 			String ProductName = entity.getProduct();
 			String CustomerName=entity.getCustomerName();
 			if ("SEND".equalsIgnoreCase(emailNotificationStatus) && signerEmail != null) {
-			    EMAIL_EXECUTOR.submit(() -> {
-			        try {
+				log.info("Email Notification Send:{}");
+				try {
 			            String mailBody = mailEsignSdkString(signerEmail, signerShortUrl, merchantName, ProductName,CustomerName,trackId);
 			            String subject = esignSubject;
 			            log.info("Signer Email IDs:{}", signerEmail);
-			          sendFailureEmail.sendEkycFailureEmail(mailBody, null, subject, signerEmail);
+			          sendFailureEmail.sendEkycFailureEmail(mailBody, emailSend, subject, signerEmail);
 			        } catch (Exception e) {
 			            log.error("Error sending eSign SDK email to {}", signerEmail, e);
 			        }
-			    });
+			    
 			}
 
 		}
@@ -154,13 +153,12 @@ public class EsignResponseUpdate {
 
 	public String mailEsignSdkString(String signerEmail, String signerShortUrl, String merchantName, String productName,String customerName,String trackId)
 			throws IOException {
+		log.info("Shrot Url for Signer: {}", signerShortUrl);
 		String mailstring = CommonUtils.readUsingFileInputStream(emailEsignTemplatePath);
 		mailstring = mailstring.replace("{{customerName}}", customerName);
 		mailstring = mailstring.replace("{{MerchantName}}", merchantName);
 		mailstring = mailstring.replace("{{trackId}}", trackId);
-		mailstring = mailstring.replace("{{expiredTime}}", "180");
 		mailstring = mailstring.replace("{{signerShortUrl}}", signerShortUrl);
-		//mailstring = mailstring.replace("{{productName}}", productName);
 		return mailstring;
 	}
 

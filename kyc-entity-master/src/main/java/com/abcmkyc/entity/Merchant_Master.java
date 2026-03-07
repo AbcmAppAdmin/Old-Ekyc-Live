@@ -9,6 +9,7 @@ import com.abcmkyc.Enum.Apps;
 import com.abcmkyc.Enum.Billing;
 import com.abcmkyc.Enum.DRIVING_LICENSE;
 import com.abcmkyc.Enum.Dashboard;
+import com.abcmkyc.Enum.Esign;
 import com.abcmkyc.Enum.GstLit;
 import com.abcmkyc.Enum.KycReport;
 import com.abcmkyc.Enum.PanPro;
@@ -148,6 +149,11 @@ public class Merchant_Master {
 	@Column(length = 8, columnDefinition = "varchar(10) default 'DESABLE'")
 	@Enumerated(EnumType.STRING)
 	private VoterId voterId  = VoterId.DESABLE;
+	
+
+	@Column(length = 8, columnDefinition = "varchar(10) default 'DESABLE'")
+	@Enumerated(EnumType.STRING)
+	private Esign  esign  = Esign.DESABLE;
 
 
 	@Column(name = "api_key", length = 100)
@@ -155,6 +161,10 @@ public class Merchant_Master {
 
 	@Column(name = "app_id", length = 100)
 	private String appId;
+	
+	
+	@Column(name = "ip_allowed", length = 1000, nullable = true)
+	private String ipAllowed;
 
 
 	@OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, fetch =

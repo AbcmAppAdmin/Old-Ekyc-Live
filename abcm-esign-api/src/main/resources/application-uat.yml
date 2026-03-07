@@ -14,8 +14,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-        format_sql: true
-    show-sql: true
+        format_sql: false
+    show-sql: false
     
 merchantDetails: http://203.192.228.125:1002/KycRouting
 

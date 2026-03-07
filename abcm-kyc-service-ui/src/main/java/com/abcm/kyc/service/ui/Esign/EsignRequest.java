@@ -9,5 +9,7 @@ public class EsignRequest {
 
 	private String document_name;
 	private String link_expiry_min;
+	private String merchantId;
+	private String allowDownload;
 	
 }

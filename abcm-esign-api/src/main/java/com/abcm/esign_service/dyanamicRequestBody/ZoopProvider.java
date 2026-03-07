@@ -23,6 +23,9 @@ public class ZoopProvider implements ServiceProvider<ZoopEsignAdhaarRequest> {
 	@Value("${WebhookUrl}")
 	private String WebhookUrl;
 	
+	
+	private final static String WHITE_LABEL="C";
+	
     @Override
     public ZoopEsignAdhaarRequest buildRequest(EsignMerchantRequest request, MultipartFile file) {
 
@@ -34,8 +37,7 @@ public class ZoopProvider implements ServiceProvider<ZoopEsignAdhaarRequest> {
         ZoopEsignAdhaarRequest.Document document = new ZoopEsignAdhaarRequest.Document();
         document.setName(request.getDocument_name());
         document.setData(CommonUtils.convertDocumentToBase64(file));
-        document.setInfo("test");
-
+        document.setInfo("Esign Document");
         zoopRequest.setDocument(document);
 
         // ✅ 2. Signers Set
@@ -72,7 +74,7 @@ public class ZoopProvider implements ServiceProvider<ZoopEsignAdhaarRequest> {
 
         // ✅ 3. Other Fields
         zoopRequest.setTxn_expiry_min(request.getLink_expiry_min());
-        zoopRequest.setWhite_label("Y");
+        zoopRequest.setWhite_label(WHITE_LABEL);
         zoopRequest.setRedirect_url(returnUrl);
         zoopRequest.setResponse_url(WebhookUrl);
         zoopRequest.setEsign_type("AADHAAR");

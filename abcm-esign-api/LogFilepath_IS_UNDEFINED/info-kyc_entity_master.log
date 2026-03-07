@@ -1,0 +1,27 @@
+2026-02-19 10:30:31 [restartedMain] INFO  : Starting AbcmEsignApplication using Java 17.0.12 with PID 24816 (started by techa in C:\EKYC-GITHUB\Old-Ekyc-Live\abcm-esign-api)
+2026-02-19 10:30:31 [restartedMain] INFO  : The following 1 profile is active: "uat"
+2026-02-19 10:30:31 [restartedMain] INFO  : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-19 10:30:31 [restartedMain] INFO  : Finished Spring Data repository scanning in 1 ms. Found 0 JPA repository interfaces.
+2026-02-19 10:30:32 [restartedMain] INFO  : Tomcat initialized with port 8044 (http)
+2026-02-19 10:30:32 [restartedMain] INFO  : Starting service [Tomcat]
+2026-02-19 10:30:32 [restartedMain] INFO  : Starting Servlet engine: [Apache Tomcat/10.1.41]
+2026-02-19 10:30:32 [restartedMain] INFO  : Initializing Spring embedded WebApplicationContext
+2026-02-19 10:30:32 [restartedMain] INFO  : Root WebApplicationContext: initialization completed in 257 ms
+2026-02-19 10:30:32 [restartedMain] INFO  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-02-19 10:30:32 [restartedMain] INFO  : HHH000026: Second-level cache disabled
+2026-02-19 10:30:32 [restartedMain] INFO  : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-19 10:30:32 [restartedMain] INFO  : HikariPool-8 - Starting...
+2026-02-19 10:30:33 [restartedMain] INFO  : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (null)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-19 10:30:33 [restartedMain] INFO  : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-19 10:30:33 [restartedMain] INFO  : HikariPool-8 - Starting...
+2026-02-19 10:30:34 [restartedMain] INFO  : Stopping service [Tomcat]
+2026-02-19 10:30:34 [restartedMain] INFO  : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.

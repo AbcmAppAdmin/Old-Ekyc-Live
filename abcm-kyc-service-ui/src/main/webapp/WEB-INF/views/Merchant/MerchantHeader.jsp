@@ -129,6 +129,24 @@
 						</span> <span class="pc-mtext" data-i18n="Transaction Count">Transaction
 								Count</span>
 					</a></li>
+					
+					
+					<c:if test="${merchant.esign == 'ENABLE'}">
+					<li class="pc-item pc-hasmenu">
+						<a href="#!" class="pc-link"> 
+							<span class="pc-micon"> 
+								<svg class="pc-icon"> <use xlink:href="#custom-status-up"></use> </svg> 
+							</span>
+							<span class="pc-mtext" data-i18n="E-Sign">E-Sign</span>
+							<span class="pc-arrow"><i data-feather="chevron-right"></i></span>
+						</a>
+						<ul class="pc-submenu">
+							<li class="pc-item"><a class="pc-link" href="${url}/app/merchant/signer" data-i18n="E-Sign">E-Sign</a></li>
+							<li class="pc-item"><a class="pc-link" href="${url}/app/merchant/esignReport" data-i18n="E-Sign Report">E-Sign Report</a></li>
+							
+						</ul>
+					</li>
+					</c:if>
 				</ul>
 			</div>
 		</div>

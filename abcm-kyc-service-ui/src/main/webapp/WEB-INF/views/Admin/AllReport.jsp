@@ -57,6 +57,7 @@
         <option value="Gstin">GSTIN</option>
          <option value="DRIVING_LICENSE">DRIVING_LICENSE</option>
          <option value="voter-id">VOTER-ID</option>
+          <option value="e-sign">E-SIGN</option>
       </select>
     </div>
     
@@ -117,6 +118,7 @@
 									<th>response_message</th>
 									
 									<th>Status</th>
+											<th>Signer Status</th>
 									<th>provider_response_message</th>
 								</tr>
 							</thead>
@@ -286,8 +288,11 @@ $(document).ready(function () {
                    
                     "<td>" + (item.responseMessage || '') + "</td>" +
                     
-                    "<td><span style='color:" + (item.status === "SUCCESS" ? "green" : "red") + 
+                    "<td><span style='color:" + (item.status === "SUCCESS" || item.status === "SIGNED" ? "green" : "red") + 
                     "; font-weight: bold;'>" + (item.status || '') + "</span></td>"+
+           
+                    "<td><span style='color:" + (item.signerStatus === "SUCCESS" || item.signerStatus === "INITIATED" ? "green" : "red") + 
+                    "; font-weight: bold;'>" + (item.signerStatus || '') + "</span></td>"+
                     "<td>" + (item.reasonMessage || '') + "</td>" +
                     "</tr>";
             });

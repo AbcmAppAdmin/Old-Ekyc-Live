@@ -2,9 +2,11 @@ package com.abcm.esign_service.util;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import com.abcm.esign_service.DTO.EsignMerchantRequest;
 import com.abcm.esign_service.DTO.EsignRequest;
+import com.abcm.esign_service.exception.CustomException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -16,36 +18,51 @@ import lombok.extern.slf4j.Slf4j;
 public class EsignMerchantRequestMapper {
 
     private final ObjectMapper mapper;
+    
+   
 
     public EsignMerchantRequest mapToFullRequest(
             EsignRequest esignRequest,
             String signersJson) {
 
         try {
-
             log.info("Esign client request Map To original Request:{} ", esignRequest);
-
             List<EsignMerchantRequest.Signer> signers =
                     mapper.readValue(signersJson,
                             new TypeReference<List<EsignMerchantRequest.Signer>>() {});
+           
             setFixedCoordinates(signers);
+            int hours =  Integer.valueOf(esignRequest.getLink_expiry());
+            int minutes;
+            if (hours == 0) {
+                minutes = 60;
+            } else {
+                minutes = hours * 60;
+            }
             return EsignMerchantRequest.builder()
                     .merchant_id(esignRequest.getMerchant_id())
                     .consent(esignRequest.getConsent())
                     .document_name(esignRequest.getDocument_name())
                     .Order_Id(esignRequest.getOrder_id())
                     .webhook_url(esignRequest.getWebhook_url())
-                    .link_expiry_min(esignRequest.getLink_expiry_min())
+                    .link_expiry_min(String.valueOf(minutes))
                     .signers(signers)
                     .build();
 
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid JSON format", e);
+        } catch (CustomException e) {
+            throw e;   
+        } 
+        catch (IllegalArgumentException e) {
+            throw new CustomException(e.getMessage(), HttpStatus.BAD_REQUEST.value());
+        } 
+        catch (Exception e) {
+            log.error("Error while processing signer request", e.getMessage());
+            throw new CustomException("Invalid Signer Details", HttpStatus.BAD_REQUEST.value());
         }
     }
 
    
-    
+
     
     private void setFixedCoordinates(List<EsignMerchantRequest.Signer> signers) {
         int size = signers.size();
@@ -53,17 +70,22 @@ public class EsignMerchantRequestMapper {
             throw new IllegalArgumentException("Only 1 to 4 signers allowed");
         }
 
-        int y = 30;
-        int startX = 450;
-        int gap = 140; 
+        int y = 15;
+        int startX = 460;
+        int gap = 152; 
 
         for (int i = 0; i < size; i++) {
             int x = startX - (i * gap);
-            log.info("Signer {}: {}, x={}, y={}", i + 1, signers.get(i).getSigner_name(), x, y);
+            log.info("Signer {}: {}, x={}, y={}",
+                    i + 1,
+                    signers.get(i).getSigner_name(),
+                    x,
+                    y);
             update(signers.get(i), x, y);
         }
     }
     /*
+
     private void setFixedCoordinates(List<EsignMerchantRequest.Signer> signers) {
 
         int size = signers.size();
@@ -94,6 +116,7 @@ public class EsignMerchantRequestMapper {
             update(signers.get(3), 450, 100);
         }
     }
+
 */
     private void update(EsignMerchantRequest.Signer signer, int x, int y) {
 
@@ -108,4 +131,8 @@ public class EsignMerchantRequestMapper {
         coord.setX_coord(x);
         coord.setY_coord(y);
     }
+    
+    
+    
+    
 }

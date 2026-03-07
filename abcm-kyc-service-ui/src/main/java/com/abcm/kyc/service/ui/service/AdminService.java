@@ -2,8 +2,8 @@ package com.abcm.kyc.service.ui.service;
 
 import java.util.List;
 
-
 import com.abcm.kyc.service.ui.dto.ApiResponseModel;
+import com.abcm.kyc.service.ui.dto.MerchantDTO;
 import com.abcm.kyc.service.ui.dto.MerchantIdMidNameProjection;
 import com.abcm.kyc.service.ui.dto.MerchantKycOnboardingRequest;
 import com.abcm.kyc.service.ui.dto.MerchantRoutingUiRequest;
@@ -69,6 +69,9 @@ public interface AdminService {
 	public ApiResponseModel getWalletBalance(String merchantId);
 
 	public boolean updateUserPassword(UpdatePasswordModel updatePasswordModel);
+	
+	
+	public List<MerchantDTO> getEsignMerchants();
 
 	
 	

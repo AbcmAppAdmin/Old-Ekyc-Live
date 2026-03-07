@@ -41,10 +41,10 @@ response:
       message: Provider updated successfully
 
 urls:
-  KYC_URL: http://203.192.228.125:1002/kyc-report/api/v1/kyc/report
-  KYC_Report_Merchnat: http://203.192.228.125:1002/kyc-report/api/v1/kyc/report/Merchant
-  KYC_REPORT_URL: http://203.192.228.125:1002/kyc-report
-  KYC_ROUTE_URL:  http://203.192.228.125:1002/KycRouting
+  #KYC_URL: http://203.192.228.125:1002/kyc-report/api/v1/kyc/report
+  #KYC_Report_Merchnat: http://203.192.228.125:1002/kyc-report/api/v1/kyc/report/Merchant
+  #KYC_REPORT_URL: http://203.192.228.125:1002/kyc-report
+  #KYC_ROUTE_URL:  http://203.192.228.125:1002/KycRouting
   
   #Local URL
   
@@ -54,10 +54,10 @@ urls:
   #KYC_ROUTE_URL:  http://localhost:8089
   
   #Live URL
-  #KYC_URL: https://ekyc.ablepay.in/kyc-report/api/v1/kyc/report
-  #KYC_Report_Merchnat: https://ekyc.ablepay.in/kyc-report/api/v1/kyc/report/Merchant
-  #KYC_REPORT_URL: https://ekyc.ablepay.in/kyc-report
-  #KYC_ROUTE_URL:  https://ekyc.ablepay.in/KycRouting
+  KYC_URL: https://ekyc.ablepay.in/kyc-report/api/v1/kyc/report
+  KYC_Report_Merchnat: https://ekyc.ablepay.in/kyc-report/api/v1/kyc/report/Merchant
+  KYC_REPORT_URL: https://ekyc.ablepay.in/kyc-report
+  KYC_ROUTE_URL:  https://ekyc.ablepay.in/KycRouting
   validity: 90
   
   

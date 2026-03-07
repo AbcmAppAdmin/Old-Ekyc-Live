@@ -12,8 +12,8 @@ public class ProductDetailsDto {
     private String appId;
     private String apiKey;
     private boolean isActive;
-    @JsonProperty("voter_id")
-    private String voter_id;
+    @JsonProperty("okyc")
+    private String OKYC;
 	private Long productId;
 	private String productName;
 	private Long providerId;

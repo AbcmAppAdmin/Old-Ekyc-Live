@@ -69,6 +69,24 @@ public interface MerchantRepository extends JpaRepository<Merchant_Master, Long>
 	Optional<Merchant_Master> findByMid(String mid);
 	
 	
+	@Query(
+	        value = "SELECT mm.mid AS merchantId, mm.name AS merchantName " +
+	                "FROM abcm_kyc_ms_db.merchant_master mm " +
+	                "INNER JOIN abcm_kyc_ms_db.merchant_product_route mp ON mm.mid = mp.mid " +
+	                "WHERE mp.product_name = 'E-SIGN'",
+	        nativeQuery = true
+	    )
+	    List<Object[]> fetchEsignMerchants();
+	    
+	    public interface MerchantApiCredentialsProjection {
+	        String getApiKey();
+	        String getAppId();
+	    }
+
+	    @Query("SELECT m.apiKey AS apiKey, m.appId AS appId FROM Merchant_Master m WHERE m.mid = :mid")
+	    MerchantApiCredentialsProjection findApiCredentialsByMid(@Param("mid") String mid);
+	
+	
 	
 
 

@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.abcm.kyc.service.ui.config.SecurityUtil;
 import com.abcm.kyc.service.ui.dto.AddBalanceRequest;
+import com.abcm.kyc.service.ui.dto.MerchantDTO;
 import com.abcm.kyc.service.ui.dto.PaymentResponseModel;
 import com.abcm.kyc.service.ui.payment.PaymentService;
 import com.abcm.kyc.service.ui.service.MerchantService;
@@ -234,5 +236,43 @@ public class MerchantController {
 			return "Merchant/TxnCountReport";
 		}).orElse("redirect:/login");
 	}
+	
+	@GetMapping("/signer")
+	public String signerView(@ModelAttribute("authUser") SecurityUtil.AuthenticatedUser authUser, Model model) {
+	    return Optional.ofNullable(authUser).map(user -> {
+	        log.info("Signer Page Accessed by: {}", user.getUsername());
+	        model.addAttribute("username", user.getUsername());
+	        Merchant_Master merchant = merchantService.getMerchantByUsername(user.getUsername());
+	        if (merchant == null) {
+	            log.error("Merchant not found for username: {}", user.getUsername());
+	            return "redirect:/login";
+	        }
+	        model.addAttribute("merchantName", merchant.getName());
+	        model.addAttribute("merchant", merchant);
+	        model.addAttribute("merchantId", merchant.getMid());
+
+	        return "Merchant/signer";
+	    }).orElse("redirect:/login");
+	}
+	
+	@GetMapping("/esignReport")
+	public String esignReportView(@ModelAttribute("authUser") SecurityUtil.AuthenticatedUser authUser, Model model) {
+	    return Optional.ofNullable(authUser).map(user -> {
+	        log.info("E-Sign Report Page Accessed by: {}", user.getUsername());
+	        model.addAttribute("username", user.getUsername());
+	        Merchant_Master merchant = merchantService.getMerchantByUsername(user.getUsername());
+	        log.info("Merchant Details :{}",merchant);
+	        if (merchant == null) {
+	            log.error("Merchant not found for username: {}", user.getUsername());
+	            return "redirect:/login";
+	        }
+	        model.addAttribute("merchantName", merchant.getName());
+	        model.addAttribute("merchant", merchant);
+
+	        return "Merchant/signerReport";
+	    }).orElse("redirect:/login");
+	}
+
+
 
 }

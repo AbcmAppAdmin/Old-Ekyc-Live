@@ -21,10 +21,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.abcm.esign_service.DTO.EsignRequest;
 import com.abcm.esign_service.DTO.ResponseModel;
+import com.abcm.esign_service.service.IpWhitelistService;
 import com.abcm.esign_service.service.VerifyEsignService;
 import com.abcm.esign_service.serviceImpl.KycDataService;
 import com.abcmkyc.entity.KycData;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,7 @@ public class EsignVerificationController {
 
 	private final VerifyEsignService service;
     private  final KycDataService kycDataService;
+    private final IpWhitelistService ipWhitelistService;
 	
 	@Value("${clientUrl}")
 	private String clientUrl;
@@ -45,10 +48,12 @@ public class EsignVerificationController {
 	@PostMapping(value = "eSignAadhaar/verify", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ResponseModel> esignVerify(@ModelAttribute EsignRequest basicRequest,
 			@RequestPart("signers") String signersJson, @RequestPart("file") MultipartFile file,
-			@RequestHeader("app-id") String appId, @RequestHeader("api-key") String apiKey) throws IOException {
-
+			@RequestHeader("app-id") String appId, @RequestHeader("api-key") String apiKey,HttpServletRequest request) throws IOException {
 		log.info("Recevied eSignAdhaar Controller Request hit:{}");
-		ResponseModel responseModel = service.verifyEsign(basicRequest, signersJson, file, appId, apiKey);
+		
+		ipWhitelistService.assertIpAllowed(basicRequest.getMerchant_id(), request);
+		
+		ResponseModel responseModel = service.verifyEsign(basicRequest, signersJson, file, appId, apiKey,request);
 		return ResponseEntity.status(responseModel.getStatusCode()).body(responseModel);
 	}
 
@@ -105,6 +110,10 @@ public class EsignVerificationController {
         response.setHeader("Connection", "close");
     }
 
+    
+    
+    
+    
 
 }
 

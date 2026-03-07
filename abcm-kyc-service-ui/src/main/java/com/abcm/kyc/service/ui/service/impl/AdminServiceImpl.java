@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.abcm.kyc.service.ui.ApiCall.KycReportApiClient;
 import com.abcm.kyc.service.ui.dto.ApiResponseModel;
+import com.abcm.kyc.service.ui.dto.MerchantDTO;
 import com.abcm.kyc.service.ui.dto.MerchantIdMidNameProjection;
 import com.abcm.kyc.service.ui.dto.MerchantKycOnboardingRequest;
 import com.abcm.kyc.service.ui.dto.MerchantRoutingUiRequest;
@@ -105,6 +106,7 @@ public class AdminServiceImpl implements AdminService {
 			merchant.setState(dto.getState());
 			merchant.setCity(dto.getCity());
 			merchant.setPincode(dto.getPincode());
+			merchant.setIpAllowed(dto.getIpAllowed());
 			if (merchant.getCredentials() == null) {
 			    merchant.setCredentials(new Credentials());
 			}
@@ -687,6 +689,21 @@ public class AdminServiceImpl implements AdminService {
 	}
 
 
+
+	@Override
+	public List<MerchantDTO> getEsignMerchants() {
+	    try {
+	        return merchantRepository.fetchEsignMerchants().stream()
+	                .map(row -> new MerchantDTO(
+	                        (String) row[0], // merchantId as String
+	                        (String) row[1]  // merchantName as String
+	                ))
+	                .collect(Collectors.toList());
+	    } catch (Exception e) {
+	        log.error("Exception in Esign Report: {}", e.getMessage(), e);
+	    }
+	    return List.of(); // return empty list instead of null
+	}
 
 
 

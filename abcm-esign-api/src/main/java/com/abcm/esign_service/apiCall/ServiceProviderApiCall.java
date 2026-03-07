@@ -23,40 +23,45 @@ public class ServiceProviderApiCall {
 
     public String providerApiCall(ZoopEsignAdhaarRequest zoopEsignAdhaarRequest, ProductDetailsDto productDetailsDto) {
 
-        log.info("Zoop Esign Provider API Call - AppID: " + productDetailsDto.getProviderAppId() +
-                ", AppKey: " + productDetailsDto.getProviderAppkey());
+		log.info("Zoop Esign Provider API Call - AppID: " + productDetailsDto.getProviderAppId() +
+		         ", AppKey: " + productDetailsDto.getProviderAppkey());
+		
+		HttpHeaders httpHeaders = new HttpHeaders();
+		
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpHeaders httpHeaders = new HttpHeaders();
+		setProviderHeaders(httpHeaders, productDetailsDto.getProviderName(), productDetailsDto.getProviderAppId(),
+				productDetailsDto.getProviderAppkey());
 
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<ZoopEsignAdhaarRequest> entity = new HttpEntity<>(zoopEsignAdhaarRequest, httpHeaders);
 
-        setProviderHeaders(httpHeaders, productDetailsDto.getProviderName(), productDetailsDto.getProviderAppId(),
-                productDetailsDto.getProviderAppkey());
+		try {
+			ResponseEntity<String> response = restTemplate.exchange(productDetailsDto.getAadhaarOtpSendUrl().trim(),
+					HttpMethod.POST, entity, String.class);
 
-        HttpEntity<ZoopEsignAdhaarRequest> entity = new HttpEntity<>(zoopEsignAdhaarRequest, httpHeaders);
+			int statusCode = response.getStatusCode().value();
+			log.info("Api call Response Code: {}",statusCode);
 
-        try {
-            ResponseEntity<String> response = restTemplate.exchange(productDetailsDto.getAadhaarOtpSendUrl().trim(),
-                    HttpMethod.POST, entity, String.class);
+			 return response.getBody();
 
-            return response.getBody();
+            
 
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            log.error("Error response from API: {}", e.getResponseBodyAsString());
-            e.printStackTrace();
-            return "Error: " + e.getResponseBodyAsString();
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
+			log.error("Error response from API: {}", e.getResponseBodyAsString());
+			return e.getResponseBodyAsString();
 
-        } catch (RuntimeException e) {
-            log.error("Exception occurred: {}", e.getMessage());
-            e.printStackTrace();
-            return "Exception occurred Runtime: " + e.getMessage();
+		} catch (RuntimeException e) {
+			log.error("Exception occurred: {}", e);
+			e.printStackTrace();
+			return "fail:false";
 
-        } catch (Exception e) {
-            log.error("Exception occurred: {}", e.getMessage());
-            e.printStackTrace();
-            return "Exception occurred Main: " + e.getMessage();
-        }
-    }
+		} catch (Exception e) {
+			log.error("Exception occurred: {}", e);
+			e.printStackTrace();
+			return "fail:false";
+		}
+		
+	}
 
     private void setProviderHeaders(HttpHeaders headers, String provider, String appId, String apiKey) {
         log.info("App id: {}, appKey: {}", appId, apiKey);

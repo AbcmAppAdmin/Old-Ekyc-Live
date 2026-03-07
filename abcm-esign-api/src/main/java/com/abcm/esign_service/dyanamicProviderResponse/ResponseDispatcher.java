@@ -26,9 +26,9 @@ public class ResponseDispatcher {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getVoterIdResponse(String providerName, JSONObject input, String trackId, String merchanId, Long productRate,String orderId) {
+    public <T> T getVoterIdResponse(String providerName, JSONObject input, String trackId, String merchanId, Long productRate,String orderId,String whiteLabel) {
        log.info("ResponseDispatcher Enter: " + providerName);
-       log.info("Provider API response : {} " ,  input);
+       //log.info("Provider API response : {} " ,  input);
         
 
         ProviderResponseHandler<T> handler = (ProviderResponseHandler<T>) handlers.get(providerName.toLowerCase());
@@ -36,6 +36,6 @@ public class ResponseDispatcher {
             throw new RuntimeException("No response handler found for provider: " + providerName);
         }
 
-        return handler.voterIdVerifyResponseToMerchant(input, trackId, merchanId, productRate,orderId);
+        return handler.esignVerifyResponseToMerchant(input, trackId, merchanId, productRate,orderId, whiteLabel);
     }
 }

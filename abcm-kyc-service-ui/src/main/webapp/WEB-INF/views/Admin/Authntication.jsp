@@ -35,6 +35,7 @@
 										<th>GST</th>
 										<th>DRIVING_LICENSE</th>
 										<th>VOTER-ID</th>
+										<th>E-Sign-View</th>
 										<th>Billing</th>
 										<th>Dashboard</th>
 										<th>Product</th>
@@ -78,6 +79,7 @@ $(document).ready(function () {
                     let GstLitstatuschecked = item.gstLit == "ENABLE" ? "checked" : "";
                     let Dlstatuschecked = item.drivingLicense == "ENABLE" ? "checked" : "";
                     let Voterstatuschecked = item.voterid == "ENABLE" ? "checked" : "";
+                    let Esignstatuschecked = item.esign == "ENABLE" ? "checked" : "";
                     let Billingstatuschecked = item.billing == "ENABLE" ? "checked" : "";
                     let Productstatuschecked = item.product == "ENABLE" ? "checked" : "";
                     let Dashboardstatuschecked = item.dashboard == "ENABLE" ? "checked" : "";
@@ -100,6 +102,8 @@ $(document).ready(function () {
                     html += "<td><input type='checkbox' onclick=\"onclickActivity('" + item.mid + "','" + item.id + "','" + item.credentials.username + "','drivingLicense',this.value,'String')\" value='" + (Dlstatuschecked ? "DESABLE" : "ENABLE") + "' " + Dlstatuschecked + "></td>";
 
                     html += "<td><input type='checkbox' onclick=\"onclickActivity('" + item.mid + "','" + item.id + "','" + item.credentials.username + "','voterId',this.value,'String')\" value='" + (Voterstatuschecked ? "DESABLE" : "ENABLE") + "' " + Voterstatuschecked + "></td>";
+                    html += "<td><input type='checkbox' onclick=\"onclickActivity('" + item.mid + "','" + item.id + "','" + item.credentials.username + "','esign',this.value,'String')\" value='" + (Esignstatuschecked ? "DESABLE" : "ENABLE") + "' " + Esignstatuschecked + "></td>";
+
 
                     html += "<td><input type='checkbox' onclick=\"onclickActivity('" + item.mid + "','" + item.id + "','" + item.credentials.username + "','billing',this.value,'String')\" value='" + (Billingstatuschecked ? "DESABLE" : "ENABLE") + "' " + Billingstatuschecked + "></td>";
 

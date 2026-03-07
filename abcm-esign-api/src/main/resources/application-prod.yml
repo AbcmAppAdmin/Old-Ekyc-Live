@@ -18,7 +18,11 @@ logging:
 
 merchantDetails: https://ekyc.ablepay.in/KycRouting
 
-LogFilepath: /home/ekyc-log/abcm-voter-api-log/
+LogFilepath: /home/ekyc-log/abcm-esign-api-log/
+
+timeout:
+  connectionTimeout: 5000
+  readTimeout: 10000
 
 management:
   endpoints:
@@ -34,7 +38,7 @@ prometheus:
     export:
       enabled: true
 
-ContextPath: https://ekyc.ablepay.in/abcm-voterid-api
+ContextPath: https://ekyc.ablepay.in/abcm-esign-api
 
 #clientUrl: http://localhost:8087
 

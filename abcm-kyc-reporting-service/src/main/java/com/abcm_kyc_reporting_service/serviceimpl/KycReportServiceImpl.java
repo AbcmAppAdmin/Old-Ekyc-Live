@@ -86,7 +86,7 @@ public class KycReportServiceImpl implements KycReportService {
 	        data.getIdentificationNo(),
 	        data.getCustomerName(),
 	        data.getLegalName(),
-	        data.getCreated_at(),
+	        data.getCreatedAt(),
 	        data.getMerchantRequestAt(),
 	        data.getMerchantResponseAt(),
 	        data.getTrackId(),
@@ -96,7 +96,8 @@ public class KycReportServiceImpl implements KycReportService {
 	        data.getReasonMessage(),
 	        data.isWebhookStatusMerchant(),
 	        data.isWebhookStatus(),
-	        data.getOrderId()
+	        data.getOrderId(),
+	        data.getSignerStatus()
 	    ));
 
 	    boolean noData = dtoPage.isEmpty();
@@ -119,11 +120,11 @@ public class KycReportServiceImpl implements KycReportService {
 				: kycReportRepository.findAll(spec, PageRequest.of(Math.max(0, request.getPage()), request.getSize()));
 		Page<KycDataDTO> dtoPage = panDataPage.map(data -> new KycDataDTO(data.getMerchantId(), data.getMerchantName(),
 				data.getClientProviderName(), data.getProduct(), data.getBillable(), data.getIdentificationNo(),
-				data.getCustomerName(), data.getLegalName(), data.getCreated_at(), data.getMerchantRequestAt(), // ✅																						// Correctl																							// mapped
+				data.getCustomerName(), data.getLegalName(), data.getCreatedAt(), data.getMerchantRequestAt(), // ✅																						// Correctl																							// mapped
 				data.getMerchantResponseAt(), // ✅ Correctly mapped
 				data.getTrackId(), data.getRequestId(), data.getResponseMessage(), data.getStatus(),
 				data.getReasonMessage(),  data.isWebhookStatusMerchant(), // ✅ NEW FIELD
-			    data.isWebhookStatus(),data.getOrderId() ));
+			    data.isWebhookStatus(),data.getOrderId(),data.getSignerStatus()));
 		boolean noData = dtoPage.isEmpty();
 		String messageKey = noData ? "custom.messages.data-not-found" : "custom.messages.success";
 		String codeKey = noData ? "custom.codes.data-not-found" : "custom.codes.success";
@@ -140,7 +141,7 @@ public class KycReportServiceImpl implements KycReportService {
 	private Specification<KycData> buildSpecificationMerchant(String mid, LocalDateTime fromDate, LocalDateTime toDate,
 			String product, String searchText) {
 		return (root, query, cb) -> {
-			Predicate datePredicate = cb.between(root.get("created_at"), fromDate, toDate);
+			Predicate datePredicate = cb.between(root.get("createdAt"), fromDate, toDate);
 			Predicate midPredicate = (mid != null && !mid.isBlank()) ? cb.equal(root.get("merchantId"), mid)
 					: cb.conjunction();
 			Predicate productPredicate = switch (product.toLowerCase()) {
@@ -148,8 +149,8 @@ public class KycReportServiceImpl implements KycReportService {
 			case "gstin" -> cb.equal(root.get("product"), "GSTIN");
 			case "okyc" -> cb.equal(root.get("product"), "OKYC");
 			case "driving_license" -> cb.equal(root.get("product"), "DRIVING_LICENSE");
-			case "voter-id" -> cb.equal(root.get("product"), "VOTER-ID");
-			default -> cb.and(root.get("product").in("PAN", "OKYC", "GSTIN", "DRIVING_LICENSE", "VOTER-ID"));
+			case "e-sign" -> cb.equal(root.get("product"), "E-SIGN");
+			default -> cb.and(root.get("product").in("PAN", "OKYC", "GSTIN", "DRIVING_LICENSE", "VOTER-ID","E-SIGN"));
 			};
 			// Always filter only records with status = 'SUCCESS'
 			Predicate statusPredicate = cb.equal(root.get("status"), "SUCCESS");
@@ -168,7 +169,7 @@ public class KycReportServiceImpl implements KycReportService {
 				}
 			}
 
-			query.orderBy(cb.desc(root.get("created_at")));
+			query.orderBy(cb.desc(root.get("createdAt")));
 
 			// Combine all predicates including status = 'SUCCESS'
 			return cb.and(datePredicate, midPredicate, productPredicate, searchPredicate, statusPredicate);
@@ -178,17 +179,17 @@ public class KycReportServiceImpl implements KycReportService {
 	private Specification<KycData> buildSpecification(String mid, LocalDateTime fromDate, LocalDateTime toDate,
 			String product, String searchText) {
 		return (root, query, cb) -> {
-			Predicate datePredicate = cb.between(root.get("created_at"), fromDate, toDate);
+			Predicate datePredicate = cb.between(root.get("createdAt"), fromDate, toDate);
 			Predicate midPredicate = (mid != null && !mid.isBlank()) ? cb.equal(root.get("merchantId"), mid)
 					: cb.conjunction();
-
 			Predicate productPredicate = switch (product.toLowerCase()) {
 			case "pan" -> cb.equal(root.get("product"), "PAN");
 			case "gstin" -> cb.equal(root.get("product"), "GSTIN");
 			case "okyc" -> cb.and(cb.equal(root.get("product"), "OKYC"));
 			case "driving_license" -> cb.equal(root.get("product"), "DRIVING_LICENSE");
 			case "voter-id" -> cb.equal(root.get("product"), "VOTER-ID");
-			default -> cb.and(root.get("product").in("PAN", "OKYC", "GSTIN", "DRIVING_LICENSE", "VOTER-ID"));
+			case "e-sign" -> cb.equal(root.get("product"), "E-SIGN");
+			default -> cb.and(root.get("product").in("PAN", "OKYC", "GSTIN", "DRIVING_LICENSE", "VOTER-ID","E-SIGN"));
 			};
 
 			Predicate searchPredicate = cb.conjunction();
@@ -204,7 +205,7 @@ public class KycReportServiceImpl implements KycReportService {
 				}
 			}
 
-			query.orderBy(cb.desc(root.get("created_at")));
+			query.orderBy(cb.desc(root.get("createdAt")));
 			return cb.and(datePredicate, midPredicate, productPredicate, searchPredicate);
 		};
 	}
@@ -236,7 +237,8 @@ public class KycReportServiceImpl implements KycReportService {
 							row[4] != null ? ((Number) row[4]).intValue() : 0,
 							row[5] != null ? ((Number) row[5]).intValue() : 0,
 							row[6] != null ? ((Number) row[6]).intValue() : 0,
-							row[7] != null ? ((Number) row[7]).intValue() : 0))
+							row[7] != null ? ((Number) row[7]).intValue() : 0,
+							row[8] != null ? ((Number) row[8]).intValue() : 0	))
 					.collect(Collectors.toList());
 
 			if (results.isEmpty()) {

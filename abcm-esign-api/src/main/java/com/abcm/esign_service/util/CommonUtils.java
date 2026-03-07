@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class CommonUtils {
-
+	private static final String receviedFolderName="ReceivedDocuments";
     public static long generateUniqueId() {
 
         Date currentDate = new Date();
@@ -94,8 +95,8 @@ public class CommonUtils {
      * @param downloadDir directory path where the file will be saved
      * @return absolute path of the downloaded file, or null if download failed
      */
-    public static String downloadSignedDocument(String documentUrl, String trackId, String downloadDir) {
-
+    public static String downloadSignedDocument(String documentUrl, String merchantId,String trackId, String orderId, String downloadDir) {
+    	log.info("Download allow Y Files inside:{}, trackId: {}",orderId, trackId);
         if (documentUrl == null || documentUrl.isBlank()) {
             log.error("Document URL is null or blank, cannot download");
             return null;
@@ -107,19 +108,33 @@ public class CommonUtils {
 
         HttpURLConnection connection = null;
         try {
-            // Create download directory if it doesn't exist
-            Path dirPath = Paths.get(downloadDir);
-            if (!Files.exists(dirPath)) {
-                Files.createDirectories(dirPath);
-                log.info("Created download directory: {}", dirPath);
+            // Create the base directory path if it doesn't exist
+            Path baseDirPath = Paths.get(downloadDir, receviedFolderName);
+            if (!Files.exists(baseDirPath)) {
+                Files.createDirectories(baseDirPath);
+                log.info("Created base directory: {}", baseDirPath);
             }
 
-            // Generate unique filename: ESIGN_{trackId}_{yyyyMMdd_HHmmss}.pdf
+            // Create merchant directory
+            Path merchantDir = baseDirPath.resolve(merchantId);
+            if (!Files.exists(merchantDir)) {
+                Files.createDirectories(merchantDir);
+                log.info("Created merchant directory: {}", merchantDir);
+            }
+
+            // Create order directory
+            Path orderDir = merchantDir.resolve(orderId);
+            if (!Files.exists(orderDir)) {
+                Files.createDirectories(orderDir);
+                log.info("Created order directory: {}", orderDir);
+            }
+
+            // Generate unique filename for the signed document
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
             String fileName = "ESIGN_" + trackId + "_" + timestamp + ".pdf";
-            Path filePath = dirPath.resolve(fileName);
+            Path filePath = orderDir.resolve(fileName);
 
-            // Download file from URL
+            // Download the document from the provided URL
             URI uri = URI.create(documentUrl);
             connection = (HttpURLConnection) uri.toURL().openConnection();
             connection.setRequestMethod("GET");
@@ -132,6 +147,7 @@ public class CommonUtils {
                 return null;
             }
 
+            // Save the downloaded document
             try (InputStream inputStream = connection.getInputStream()) {
                 Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
             }
@@ -150,5 +166,76 @@ public class CommonUtils {
             }
         }
     }
+    
+    
+ 
+    public static String downloadSignedDocumentAndGenerateHash(String documentUrl) {
+        log.info("Downloading signed document from URL: {}", documentUrl);
 
+        if (documentUrl == null || documentUrl.isBlank()) {
+            log.error("Document URL is null or blank");
+            return null;
+        }
+
+        HttpURLConnection connection = null;
+
+        try {
+            URI uri = URI.create(documentUrl);
+            connection = (HttpURLConnection) uri.toURL().openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(15000);
+            connection.setReadTimeout(30000);
+            connection.setInstanceFollowRedirects(true); // automatically follow redirects
+
+            int responseCode = connection.getResponseCode();
+
+            // If redirect still occurs manually follow
+            if (responseCode == HttpURLConnection.HTTP_MOVED_TEMP ||
+                responseCode == HttpURLConnection.HTTP_MOVED_PERM ||
+                responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
+
+                String newUrl = connection.getHeaderField("Location");
+                log.info("Redirected to URL: {}", newUrl);
+                connection.disconnect();
+
+                // recursive call to follow the redirect
+                return downloadSignedDocumentAndGenerateHash(newUrl);
+            }
+
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                log.error("Failed to download document. HTTP code: {}", responseCode);
+                return null;
+            }
+
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+            try (InputStream inputStream = connection.getInputStream()) {
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    digest.update(buffer, 0, bytesRead);
+                }
+            }
+
+            // Convert hash bytes to hex string
+            byte[] hashBytes = digest.digest();
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                hexString.append(String.format("%02x", b));
+            }
+
+            String hash = hexString.toString();
+            log.info("Successfully generated SHA-256 hash for document URL: {}", hash);
+
+            return hash;
+
+        } catch (Exception e) {
+            log.error("Error downloading or hashing document from URL: {}", documentUrl, e);
+            return null;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
 }

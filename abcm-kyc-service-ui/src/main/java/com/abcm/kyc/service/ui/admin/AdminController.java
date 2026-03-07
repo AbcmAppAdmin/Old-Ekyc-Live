@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.abcm.kyc.service.ui.config.SecurityUtil;
 import com.abcm.kyc.service.ui.dto.AddBalanceRequest;
 import com.abcm.kyc.service.ui.dto.ApiResponseModel;
+import com.abcm.kyc.service.ui.dto.MerchantDTO;
 import com.abcm.kyc.service.ui.dto.ProductDTO;
 import com.abcm.kyc.service.ui.payment.PaymentService;
 import com.abcm.kyc.service.ui.service.AdminService;
@@ -47,6 +49,16 @@ public class AdminController {
 
 	private final AdminService adminService;
 	
+	
+	@Value("${Esign-api-url}")
+	private String EsignApiUrl;
+
+	
+	
+
+	@Value("${ContextPath}")
+	private String ContextPath;
+
 	 
 	
 	
@@ -366,7 +378,12 @@ public class AdminController {
 			if (principal == null) {
 				return "redirect:/login";
 			}
-			
+			 List<MerchantDTO> dtos=adminService.getEsignMerchants();
+			  log.info("List of merchant  Merchant : {}", dtos);
+			  if(dtos!=null)
+			  {
+				  model.addAttribute("assignMerchant", dtos); 
+			  }
 			//log.info("The merchnat List is"+adminService.getAllMerchantIdMidNames()+"principal"+principal.getName());
 			model.addAttribute("midList", adminService.getAllMerchantIdMidNames());
 			model.addAttribute("username", principal.getName());
@@ -376,6 +393,55 @@ public class AdminController {
 		}
 		
 	}
+	
+	
+	
+	@GetMapping("/esignReport")
+	public String esignReportView(Principal principal, Model model, HttpServletRequest request) {
+		try {
+			log.info("Add Balance loading ...", principal != null ? principal.getName() : "No user found");
+			if (principal == null) {
+				return "redirect:/login";
+			}
+			 List<MerchantDTO> dtos=adminService.getEsignMerchants();
+			  //log.info("List Merchant: {}", dtos);
+			  if(dtos!=null)
+			  {
+				  model.addAttribute("midList", dtos); 
+			  }
+			//log.info("The merchnat List is"+adminService.getAllMerchantIdMidNames()+"principal"+principal.getName());
+			//model.addAttribute("midList", adminService.getAllMerchantIdMidNames());
+			model.addAttribute("username", principal.getName());
+			return "Admin/signerReport";
+		}catch (Exception e) {
+			return"redirect:/login";
+		}
+		
+	}
+	
+	@GetMapping("/signerAudit")
+	public String signerAuditView(Principal principal, Model model, HttpServletRequest request) {
+		try {
+			log.info("Signer Audit From:{}", principal != null ? principal.getName() : "No user found");
+			if (principal == null) {
+				return "redirect:/login";
+			}
+			  if(adminService.getEsignMerchants()!=null)
+			  {
+				  model.addAttribute("assignMerchant", adminService.getEsignMerchants()); 
+			  }
+			  model.addAttribute("esignUrl",EsignApiUrl );
+			  model.addAttribute("clientUrl",ContextPath);
+			//log.info("The merchnat List is"+adminService.getAllMerchantIdMidNames()+"principal"+principal.getName());
+			model.addAttribute("midList", adminService.getAllMerchantIdMidNames());
+			model.addAttribute("username", principal.getName());
+			return "Admin/SignerAudit";
+		}catch (Exception e) {
+			return"redirect:/login";
+		}
+		
+	}
+	
 
 
 

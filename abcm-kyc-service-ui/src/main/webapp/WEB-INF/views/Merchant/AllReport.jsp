@@ -61,6 +61,7 @@
                                   <c:if test="${not empty merchant && merchant.voterId=='ENABLE'}">
                                 <option value="voter-id">VOTER-ID</option>
                                 </c:if>
+                                 <option value="e-sign">E-SIGN</option>
                                 <option value="allproduct">All Product</option>
                             </select>
                             </div>
@@ -103,7 +104,9 @@
 									<th>Order Id</th>
 									
 									<th>response_message</th>
+									
 									<th>Status</th>
+									<th>Signer Status</th>
 								</tr>
 							</thead>
 							<tbody id="kycReport"></tbody>
@@ -254,9 +257,15 @@ $(document).ready(function () {
                     // "<td><span style='color:" + (item.status === "SUCCESS" ? "green" : "red") + 
                     // "; font-weight: bold;'>" + (item.status || '') + "</span></td>" 
                     "<td><button class='btn " + 
-                        (item.status === "SUCCESS" ? "btn-success" : "btn-danger") + 
+                        (item.status === "SUCCESS" || item.status === "SIGNED"   ? "btn-success" : "btn-danger") + 
                         " btn-sm shadow-sm' style='color: #ffffff; font-size: 0.5rem; font-weight: bold;'>" + 
                         (item.status || '') + 
+                        "</button></td>"
+                        
+                        "<td><button class='btn " + 
+                        (item.signerStatus === "SUCCESS" || item.signerStatus === "INITIATED" ? "btn-success" : "btn-danger") + 
+                        " btn-sm shadow-sm' style='color: #ffffff; font-size: 0.5rem; font-weight: bold;'>" + 
+                        (item.signerStatus || '') + 
                         "</button></td>"
                     "</tr>";
             });

@@ -340,7 +340,7 @@ public class KycReportDownload {
          headerStyle.setBorderRight(BorderStyle.THIN);
          Row headerRow = sheet.createRow(0);
          String[] headers = {
-             "Sr.No", "MID","MERCHANT NAME", "OKYC", "PAN", "GSTIN","DRIVING_LICENSE","VOTER-ID","TOTAL COUNT"
+             "Sr.No", "MID","MERCHANT NAME", "OKYC", "PAN", "GSTIN","DRIVING_LICENSE","VOTER-ID","E-SIGN","TOTAL COUNT"
          };
          for (int i = 0; i < headers.length; i++) {
              Cell cell = headerRow.createCell(i);
@@ -367,6 +367,7 @@ public class KycReportDownload {
              dataRow.createCell(colNum++).setCellValue(data.get("panCount").toString());
              dataRow.createCell(colNum++).setCellValue(data.get("driving_license").toString());        
              dataRow.createCell(colNum++).setCellValue(data.get("voter_id").toString());
+             dataRow.createCell(colNum++).setCellValue(data.get("esign").toString());
              dataRow.createCell(colNum++).setCellValue(data.get("totalCount").toString());
              for (int i = 0; i < headers.length; i++) {
                  dataRow.getCell(i).setCellStyle(dataStyle);

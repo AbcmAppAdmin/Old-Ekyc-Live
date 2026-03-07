@@ -2,8 +2,9 @@ spring:
   application:
     name: abcm-e-Sign-api
   profiles:
-    active: dev
+    active: prod
   config:
      import: 
           - "classpath:/response-massage.yml"
           - "classpath:/application-email-config.yml"
+spring.main.web-application-type: servlet

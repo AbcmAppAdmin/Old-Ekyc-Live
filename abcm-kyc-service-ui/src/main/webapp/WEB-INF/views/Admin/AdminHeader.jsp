@@ -175,6 +175,9 @@
 						</a>
 						<ul class="pc-submenu">
 							<li class="pc-item"><a class="pc-link" href="${url}/app/admin/signer" data-i18n="E-Sign">E-Sign</a></li>
+							<li class="pc-item"><a class="pc-link" href="${url}/app/admin/esignReport" data-i18n="E-Sign Report">E-Sign Report</a></li>
+														<li class="pc-item"><a class="pc-link" href="${url}/app/admin/signerAudit" data-i18n="Esign-Audit">Esign-Audit</a></li>
+							
 							
 						</ul>
 					</li>
@@ -401,6 +404,20 @@
 	    document.getElementById('passwordUpdateMessage').textContent = '';
 	}
 
+	
+	
+	function togglePassword(fieldId, iconElement) {
+	    const input = document.getElementById(fieldId);
+	    if (input.type === "password") {
+	        input.type = "text";  // Show password
+	        iconElement.classList.remove("bi-eye");
+	        iconElement.classList.add("bi-eye-slash"); // change icon to slashed eye
+	    } else {
+	        input.type = "password"; // Hide password
+	        iconElement.classList.remove("bi-eye-slash");
+	        iconElement.classList.add("bi-eye"); // change icon back
+	    }
+	}
 	</script>
 	
 

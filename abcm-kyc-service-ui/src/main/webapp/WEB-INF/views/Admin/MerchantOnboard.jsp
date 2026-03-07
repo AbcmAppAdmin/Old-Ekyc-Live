@@ -224,6 +224,17 @@
 							</div>
 							<span id="mpassword" style="color: red;"></span>
 						</div>
+						<div class="col-md-4 col-12">
+							<label for="merchantPhoneNo" class="form-label">Ip Allowed <span
+								style="color: red;">*</span></label>
+							<div class="input-group mb-3">
+								<span class="input-group-text" id="basic-addon1"><i
+									class="fa fa-lock"></i></span> <input type="text" class="form-control"
+									placeholder="Enter allowed ip" aria-label="Phone"
+									aria-describedby="basic-addon1" name="ipAllowed">
+							</div>
+							<span id="mpassword" style="color: red;"></span>
+						</div>
 						<div style="text-align: center;">
 							<span id="onboard_msg"></span>
 						</div>
@@ -261,6 +272,7 @@ $(document).ready(function () {
       pincode: $('input[name="pincode"]').val().trim(),
       username: $('input[name="username"]').val().trim(),
       password: $('input[name="password"]').val().trim(),
+      ipAllowed: $('input[name="ipAllowed"]').val().trim(),
       websiteUrl: $('input[name="websiteUrl"]').val().trim(),
       createdBy: $('input[name="createdBy"]').val().trim()
      

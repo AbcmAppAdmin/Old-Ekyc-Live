@@ -41,7 +41,7 @@ public class AsyncGstRequestSaveService {
 					.merchantRequestAt(now).merchantRequest(request.toString())
 					.identificationNo(request.getBusinessGstinNumber()).clientProviderName(providerName)
 					.consent(request.getConsent()).product(productName).productRate(productRate)
-					.providerRequest(requestBody.toString()).created_at(now).trackId(generateKycTransactionId())
+					.providerRequest(requestBody.toString()).createdAt(now).trackId(generateKycTransactionId())
 					//.orderId(request.getOrderId())
 					.build();
 			return gstVerificationRepository.save(kycData);

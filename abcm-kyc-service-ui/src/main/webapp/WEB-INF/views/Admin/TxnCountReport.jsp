@@ -65,6 +65,7 @@ font-size: 13px;
 						<option value="Gstin">GSTIN</option>
 						<option value="DRIVING_LICENSE">DRIVING_LICENSE</option>
 						<option value="VOTER-ID">VOTER-ID</option>
+						<option value="E-SIGN">E-SIGN</option>
 					</select>
 				</div>
 
@@ -114,6 +115,7 @@ font-size: 13px;
 								<th>GSTIN </th>
 								<th>DRIVING_LICENSE </th>
 								<th>VOTER-ID </th>
+								<th>E-SIGN</th>
 								<th>Total </th>
 							</tr>
 						</thead>
@@ -180,11 +182,12 @@ $(document).ready(function () {
                                     "<td>" + item.gstinCount + "</td>" +
                                     "<td>" + item.driving_license + "</td>" +
                                     "<td>" + item.voter_id + "</td>" +
+                                    "<td>" + item.esign + "</td>" +
                                     "<td>" + item.totalCount + "</td>" +  
                                 "</tr>";
                     });
                 } else {
-                	html = "<tr><td colspan='9' style='text-align: center; font-weight: bold; color: red;'>No data found</td></tr>";
+                	html = "<tr><td colspan='10' style='text-align: center; font-weight: bold; color: red;'>No data found</td></tr>";
 
                 }
                 $('#kycReportTableBody').html(html);

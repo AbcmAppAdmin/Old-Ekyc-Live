@@ -10,4 +10,7 @@ public interface EsignService {
 
 	ApiResponseModel esignRequest(EsignRequest esignRequest, String signersJson, MultipartFile file);
 
+	ApiResponseModel esignFetchReport(String merchantId, String fromDate, String toDate, String status, int page,
+			int size);
+
 }

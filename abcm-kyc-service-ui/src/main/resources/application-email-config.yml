@@ -14,16 +14,23 @@ email.lowbalance.subject: Low Wallet Balance – Urgent Action Required to Avoid
 
 
 
-#Ekyc Configuration
-merchantId: K10001
-ApiKey: 2SOMEO-YDUDNR-7AAMKS-L0L322
-AppId: 6dd275b6809740028a31a458 
+
 
 #Local
 #EsignApi: http://localhost:8049/api/v1/eSignAadhaar/verify
+#EsignReport: http://localhost:8049/api/esign/report
+#Esign-api-url: http://localhost:8049
 
 #UAT
-EsignApi: http://203.192.228.125:1002/abcm-esign-api/api/v1/eSignAadhaar/verify
+#EsignApi: http://203.192.228.125:1002/abcm-esign-api/api/v1/eSignAadhaar/verify
+#EsignReport: http://203.192.228.125:1002/abcm-esign-api/api/esign/report
+#Esign-api-url: http://203.192.228.125:1002/abcm-esign-api
+
+
+#LIVE
+EsignApi: https://ekyc.ablepay.in/abcm-esign-api/api/v1/eSignAadhaar/verify
+EsignReport: https://ekyc.ablepay.in/abcm-esign-api/api/esign/report
+Esign-api-url: https://ekyc.ablepay.in/abcm-esign-api
 
 
 
@@ -34,4 +41,10 @@ EsignApi: http://203.192.228.125:1002/abcm-esign-api/api/v1/eSignAadhaar/verify
 #webhookUrl: http://localhost:8087/esign/webhook
 
 #UAT
-webhookUrl: http://203.192.228.125:1002/view-kyc/esign/webhook
+#webhookUrl: http://203.192.228.125:1002/view-kyc/esign/webhook
+
+#LIVE
+webhookUrl: https://ekyc.ablepay.in/view-kyc/esign/webhook
+
+
+

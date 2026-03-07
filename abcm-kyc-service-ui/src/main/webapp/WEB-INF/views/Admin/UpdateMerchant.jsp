@@ -206,6 +206,18 @@
 
 					<span id="products_msg" style="color: red;"></span>
 				</div>
+				
+				<div class="col-md-4 col-12">
+					<label for="merchantPhoneNo" class="form-label">Ip Allowed <span
+						style="color: red;">*</span></label>
+					<div class="input-group mb-3">
+						<span class="input-group-text" id="basic-addon1"><i
+							class="fa fa-map-marker"></i></span> <input type="text"
+							class="form-control" placeholder=" Enter PinCode"
+							aria-label="Username" aria-describedby="basic-addon1"
+							name="ipAllowed" value="${merchant.ipAllowed}">
+					</div>
+				</div>
 				<div style="text-align: center;">
 					<span id="onboard_msg"></span>
 				</div>
@@ -238,7 +250,8 @@ $(document).ready(function () {
             city: $('input[name="city"]').val().trim(),
             pincode: $('input[name="pincode"]').val().trim(),
             websiteUrl: $('input[name="websiteUrl"]').val().trim(),
-            username: $('input[name="username"]').val().trim()
+            username: $('input[name="username"]').val().trim(),
+            ipAllowed: $('input[name="ipAllowed"]').val().trim()
             
         };
 
@@ -270,6 +283,7 @@ $(document).ready(function () {
             city: fields.city,
             pincode: fields.pincode,
             createdBy: fields.username,
+            ipAllowed: fields.ipAllowed,
             productRoutes: productRoutes
         };
         //alert(JSON.stringify(requestBody));

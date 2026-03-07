@@ -22,6 +22,6 @@ public class UrlHelper {
         if (requestId == null || requestId.isBlank()) {
             throw new IllegalArgumentException("request_id cannot be null, empty, or blank");
         }
-        return domain+"/view/"+ requestId;
+        return domain+"/api/v1/view/"+ requestId;
     }
 }

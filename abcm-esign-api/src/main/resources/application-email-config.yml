@@ -6,34 +6,45 @@ email.send.bcc: support@abcmapp.com,krushna.dakale@abcmapp.dev
 
 
 email.failure.verify.voter.subject: e-KYC Service {productName} Verification Failed
-email.failure.template.path: C:/CHATNPAY_LOG/abcm-esign-api/src/main/resources/static/e-KYCEmailTemplate/VoterIdFailedTemplate.html
+email.failure.template.path: /opt/tomcat/webapps/abcm-esign-api/WEB-INF/classes/static/e-KYCEmailTemplate/VoterIdFailedTemplate.html
+#C:/CHATNPAY_LOG/abcm-esign-api/src/main/resources/static/e-KYCEmailTemplate/VoterIdFailedTemplate.html
 # /opt/tomcat/webapps/abcm-voterid-api/WEB-INF/classes/static/e-KYCEmailTemplate/VoterIdFailedTemplate.html
 # C://KYCGIT//abcm-voter_id-api//src//main//resources//static//e-KYCEmailTemplate//VoterIdFailedTemplate.html
 
-email.lowBalance.template.path: /opt/tomcat/webapps/abcm-voterid-api/WEB-INF/classes/static/e-KYCEmailTemplate/e-KYC-insufficient-balance.html
+email.lowBalance.template.path: /opt/tomcat/webapps/abcm-esign-api/WEB-INF/classes/static/e-KYCEmailTemplate/e-KYC-insufficient-balance.html
 #C://KYCGIT//abcm-voter_id-api//src//main//resources//static//e-KYCEmailTemplate//e-KYC-insufficient-balance.html
 
 email.send.api.url: https://enotification.chatnpay.com/email/withmailer/sendEmailWithAttachmentWithCc
 email.lowbalance.subject: Service Suspended Due to Insufficient Wallet Balance
 email.serviceDown.subject : "Important: e-KYC Service Interruption Due to High Demand"
-email.serviceDown.template.path: /opt/tomcat/webapps/abcm-voterid-api/WEB-INF/classes/static/e-KycServiceDownEmail-T.html
+email.serviceDown.template.path: /opt/tomcat/webapps/abcm-esign-api/WEB-INF/classes/static/e-KYCEmailTemplate/e-KycServiceDownEmail-T.html
 
 
 #Esign Template 
-email.esign.template.path: /opt/apache-tomcat-10.1.28_ablepay/webapps/abcm-esign-api/WEB-INF/classes/static/e-KYC-SdkUrlEmail.html
+email.esign.template.path: /opt/tomcat/webapps/abcm-esign-api/WEB-INF/classes/static/e-KYCEmailTemplate/e-KYC-SdkUrlEmail.html
 #C:/EKYC-GITHUB/Old-Ekyc-Live/abcm-esign-api/src/main/resources/static/e-KYCEmailTemplate/e-KYC-SdkUrlEmail.html
 email.esign.subject: e-KYC signing request
+email.esign.success.subject: Document has been completely signed!
 Env: LIVE Environment
 
+email.esign.finalDownload.path: /opt/tomcat/webapps/abcm-esign-api/WEB-INF/classes/static/e-KYCEmailTemplate/FinalDocumentSend.html
+#C:/EKYC-GITHUB/Old-Ekyc-Live/abcm-esign-api/src/main/resources/static/e-KYCEmailTemplate/FinalDocumentSend.html
 
 #Return and Webhook Url
  #Local
-ReturnUrl: http://203.192.228.125:1002/abcm-esign-api/api/v1/esignReturnResponse
-WebhookUrl: http://203.192.228.125:1002/abcm-esign-api/api/esign/webhook
+#ReturnUrl: http://203.192.228.125:1002/abcm-esign-api/api/v1/esignReturnResponse
+
+#WebhookUrl: http://203.192.228.125:1002/abcm-esign-api/api/esign/webhook
 
 
 #Live
-#ReturnUrl: http://203.192.228.125:1002/abcm-esign-api/api/v1/esignReturnResponse
-#WebhookUrl: http://203.192.228.125:1002/abcm-esign-api/api/esign/webhook
+ReturnUrl: https://ekyc.ablepay.in/abcm-esign-api/api/v1/esignReturnResponse
+WebhookUrl: https://ekyc.ablepay.in/abcm-esign-api/api/esign/webhook
+
+#DocumentSavedPath
+
+signerDocumentPath: /opt/E-KycDocument/SignerDocument/
+RecivedDocsFolderName: ReceivedDocuments
+SendDocumentName: SentDocuments
 
 

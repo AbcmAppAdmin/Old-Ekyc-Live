@@ -72,6 +72,8 @@
                                   <c:if test="${not empty merchant && merchant.voterId=='ENABLE'}">
                                 <option value="voter-id">VOTER-ID</option>
                                 </c:if>
+                                
+                                  <option value="E-SIGN">E-SIGN</option>
 
 							</select>
 						</div>
@@ -116,6 +118,7 @@
 									<th>GSTIN</th>
 									<th>DRIVING_LICENSE </th>
 								<th>VOTER-ID </th>
+								<th>E-SIGN</th>
 									<th>Total</th>
 								</tr>
 							</thead>
@@ -180,11 +183,12 @@ $(document).ready(function () {
                                     "<td>" + item.gstinCount + "</td>" +
                                     "<td>" + item.driving_license + "</td>" +
                                     "<td>" + item.voter_id + "</td>" +
+                                    "<td>" + item.esign + "</td>" +
                                     "<td>" + item.totalCount + "</td>" +
                                 "</tr>";
                     });
                 } else {
-                	html = "<tr><td colspan='9' style='text-align: center; font-weight: bold; color: red;'>No data found</td></tr>";
+                	html = "<tr><td colspan='10' style='text-align: center; font-weight: bold; color: red;'>No data found</td></tr>";
 
                 }
 

@@ -24,6 +24,7 @@ public class KycDataDTO {
     private Boolean webhookStatusMerchant;
     private Boolean webhookStatus;
     private String orderId;
+    private String signerStatus;
 
     public KycDataDTO() {}
 
@@ -46,7 +47,8 @@ public class KycDataDTO {
         String reasonMessage,
         Boolean webhookStatusMerchant,
         Boolean webhookStatus,
-        String orderId
+        String orderId,
+        String signerStatus
     ) {
         this.merchantId = merchantId;
         this.merchantName = merchantName;
@@ -67,6 +69,7 @@ public class KycDataDTO {
         this.webhookStatusMerchant = webhookStatusMerchant;
         this.webhookStatus = webhookStatus;
         this.orderId = orderId;
+        this.signerStatus = signerStatus; // Setting signerStatus
     }
 
     // Getters
@@ -89,6 +92,7 @@ public class KycDataDTO {
     public Boolean isWebhookStatusMerchant() { return webhookStatusMerchant; }
     public Boolean isWebhookStatus() { return webhookStatus; }
     public String getOrderId() { return orderId; }
+    public String getSignerStatus() { return signerStatus; }
 
     // Setters
     public void setMerchantId(String merchantId) { this.merchantId = merchantId; }
@@ -109,5 +113,7 @@ public class KycDataDTO {
     public void setReasonMessage(String reasonMessage) { this.reasonMessage = reasonMessage; }
     public void setWebhookStatusMerchant(Boolean webhookStatusMerchant) { this.webhookStatusMerchant = webhookStatusMerchant; }
     public void setWebhookStatus(Boolean webhookStatus) { this.webhookStatus = webhookStatus; }
-    public void setOrderId(String orderId) { this.orderId = orderId; }
+    public void setOrderId(String orderId) { this.orderId = orderId; } 
+    public void setSignerStatus(String signerStatus) { this.signerStatus = signerStatus; }
+
 }

@@ -32,6 +32,7 @@ public class EsignResponseToMerchant {
     
     @JsonProperty("response_time")
     public String responseTime;
+    
 
     
     @JsonProperty("signer_requests")
